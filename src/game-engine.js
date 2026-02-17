@@ -230,8 +230,9 @@ export function resolveTurn(state) {
     );
   }
 
-  // Position transition
-  if (winnerTechnique.transition && tier !== OUTCOME_TIERS.MINOR) {
+  // Position transition — triggers on any win (including minor)
+  // so bottom players can actually escape bad positions
+  if (winnerTechnique.transition) {
     const t = winnerTechnique.transition;
     const oldPos = state.position;
     resolution.positionChange = {

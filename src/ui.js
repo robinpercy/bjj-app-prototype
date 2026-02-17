@@ -245,7 +245,7 @@ export function renderMatchState(state) {
   // Advantage pips
   const pips = $('advantage-pips');
   pips.innerHTML = '';
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 3; i++) {
     const pip = document.createElement('div');
     pip.className = 'pip' + (i < pos.advantage ? ' filled' : '');
     pips.appendChild(pip);
