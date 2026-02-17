@@ -19,12 +19,13 @@ export const CATEGORIES = {
 };
 
 // ─── Matchup Table (winner category → loser category → modifier) ────────────
-// Attack > Control > Reversal > Defense > Attack  (each beats next by +2)
+// Attack > Control > Reversal > Defense > Attack  (each beats next by +1)
+// Reduced from +/-2 to +/-1 so wrong guesses aren't devastating
 export const MATCHUPS = {
-  attack:   { attack: 0, control:  2, defense: -2, reversal:  0 },
-  control:  { attack: -2, control: 0, defense:  0, reversal:  2 },
-  defense:  { attack:  2, control: 0, defense:  0, reversal: -2 },
-  reversal: { attack:  0, control: -2, defense: 2, reversal:  0 },
+  attack:   { attack: 0, control:  1, defense: -1, reversal:  0 },
+  control:  { attack: -1, control: 0, defense:  0, reversal:  1 },
+  defense:  { attack:  1, control: 0, defense:  0, reversal: -1 },
+  reversal: { attack:  0, control: -1, defense: 1, reversal:  0 },
 };
 
 // ─── Positions ──────────────────────────────────────────────────────────────
@@ -72,7 +73,7 @@ export const POSITIONS = {
   side_control: {
     id: 'side_control',
     name: 'Side Control',
-    advantage: 2,
+    advantage: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal'],
@@ -82,7 +83,7 @@ export const POSITIONS = {
   mount: {
     id: 'mount',
     name: 'Mount',
-    advantage: 3,
+    advantage: 2,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal'],
@@ -92,7 +93,7 @@ export const POSITIONS = {
   back_control: {
     id: 'back_control',
     name: 'Back Control',
-    advantage: 4,
+    advantage: 2,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal'],
@@ -570,7 +571,7 @@ export const TECHNIQUES = [
       { position: 'side_control', role: 'bottom' },
       { position: 'mount', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -585,7 +586,7 @@ export const TECHNIQUES = [
       { position: 'side_control', role: 'bottom' },
       { position: 'half_guard', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -640,7 +641,7 @@ export const TECHNIQUES = [
       { position: 'mount', role: 'bottom' },
       { position: 'side_control', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -656,7 +657,7 @@ export const TECHNIQUES = [
       { position: 'mount', role: 'bottom' },
       { position: 'back_control', role: 'bottom' },
     ],
-    modifier: 0,
+    modifier: 1,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -689,7 +690,7 @@ export const TECHNIQUES = [
       { position: 'front_headlock', role: 'bottom' },
       { position: 'turtle', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -705,7 +706,7 @@ export const TECHNIQUES = [
     availableFrom: [
       { position: 'closed_guard', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -719,7 +720,7 @@ export const TECHNIQUES = [
     availableFrom: [
       { position: 'closed_guard', role: 'bottom' },
     ],
-    modifier: 2,
+    modifier: 3,
     risk: 'risky',
     requiredTokens: [],
     tokenReward: null,
@@ -733,7 +734,7 @@ export const TECHNIQUES = [
     availableFrom: [
       { position: 'mount', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -747,7 +748,7 @@ export const TECHNIQUES = [
     availableFrom: [
       { position: 'mount', role: 'bottom' },
     ],
-    modifier: 2,
+    modifier: 3,
     risk: 'neutral',
     requiredTokens: ['arm_isolated'],
     tokenReward: null,
@@ -761,7 +762,7 @@ export const TECHNIQUES = [
     availableFrom: [
       { position: 'turtle', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -777,7 +778,7 @@ export const TECHNIQUES = [
       { position: 'closed_guard', role: 'bottom' },
       { position: 'knee_shield', role: 'bottom' },
     ],
-    modifier: 0,
+    modifier: 1,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -791,7 +792,7 @@ export const TECHNIQUES = [
     availableFrom: [
       { position: 'back_control', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -805,7 +806,7 @@ export const TECHNIQUES = [
     availableFrom: [
       { position: 'half_guard', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: ['inside_position'],
     tokenReward: null,
@@ -820,7 +821,7 @@ export const TECHNIQUES = [
       { position: 'turtle', role: 'bottom' },
       { position: 'front_headlock', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'risky',
     requiredTokens: [],
     tokenReward: null,
@@ -835,7 +836,7 @@ export const TECHNIQUES = [
       { position: 'side_control', role: 'bottom' },
       { position: 'half_guard', role: 'bottom' },
     ],
-    modifier: 0,
+    modifier: 1,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
@@ -849,7 +850,7 @@ export const TECHNIQUES = [
     availableFrom: [
       { position: 'front_headlock', role: 'bottom' },
     ],
-    modifier: 1,
+    modifier: 2,
     risk: 'neutral',
     requiredTokens: [],
     tokenReward: null,
