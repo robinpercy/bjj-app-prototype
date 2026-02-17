@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-  // GitHub Pages serves from /<repo-name>/
-  // Set to '/' if using a custom domain
-  base: '/bjj-app-prototype/',
-});
+export default defineConfig(({ command }) => ({
+  // Only use the subpath for production builds (GitHub Pages).
+  // Dev server always serves from root so port-forwarding works.
+  base: command === 'build' ? '/bjj-app-prototype/' : '/',
+}));
