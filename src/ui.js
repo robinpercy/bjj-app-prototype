@@ -296,10 +296,15 @@ export function renderActionButtons(state, onCategorySelect) {
   const allCategories = ['attack', 'control', 'defense', 'reversal'];
 
   // Determine which category is "optimal" — the one that has the highest expected value
-  // For simplicity: if you're top, attack/control are optimal; if bottom, defense/reversal
-  const optimalCategories = playerRole === 'top'
+  // Standing neutral: attack (takedowns) is the best play for both players
+  // Top position: attack is optimal (you have the advantage)
+  // Bottom position: reversal is optimal (escape and improve position)
+  const pos = POSITIONS[state.position];
+  const optimalCategories = pos.initiative === 'neutral'
     ? ['attack']
-    : ['reversal'];
+    : playerRole === 'top'
+      ? ['attack']
+      : ['reversal'];
 
   for (const catId of allCategories) {
     const cat = CATEGORIES[catId];
