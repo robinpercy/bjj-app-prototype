@@ -16,7 +16,10 @@
   --purple:    #bc8cff;
 }
 
-html, body {
+html {
+  height: 100%;
+}
+body {
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #000;
@@ -39,6 +42,8 @@ html, body {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ─── Screens ────────────────────────────────────────────────────────────── */
@@ -56,6 +61,7 @@ html, body {
   pointer-events: auto;
   position: relative;
   flex: 1;
+  min-height: 0;
 }
 
 /* ─── START SCREEN ───────────────────────────────────────────────────────── */
@@ -240,14 +246,14 @@ html, body {
 
 /* ─── POSITION PANEL ─────────────────────────────────────────────────────── */
 .position-panel {
-  flex: 1;
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 8px 20px 0;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   min-height: 0;
 }
 .mat-bg {
@@ -291,11 +297,11 @@ html, body {
 /* ── Silhouette area ── */
 .silhouette-area {
   position: relative;
-  width: 220px;
-  height: 220px;
-  margin: 10px 0 6px;
+  width: min(220px, 40vw);
+  aspect-ratio: 1;
+  margin: 6px 0 4px;
   z-index: 1;
-  flex-shrink: 0;
+  flex-shrink: 1;
 }
 .silhouette-ring {
   position: absolute;
@@ -314,8 +320,12 @@ html, body {
   justify-content: center;
 }
 .silhouette-figures svg {
-  width: 180px;
-  height: 180px;
+  width: 82%;
+  height: 82%;
+}
+
+@media (max-height: 650px) {
+  .silhouette-area { width: min(160px, 35vw); }
 }
 
 /* ── Advantage row ── */
@@ -385,8 +395,8 @@ html, body {
 /* ─── ACTION AREA ────────────────────────────────────────────────────────── */
 .action-area {
   flex-shrink: 0;
-  padding: 10px 16px 28px;
-  padding-bottom: max(28px, env(safe-area-inset-bottom));
+  padding: 10px 16px 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
   background: var(--surface);
   border-top: 1px solid var(--border);
 }
@@ -409,12 +419,18 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 14px 8px;
+  gap: 2px;
+  padding: 12px 8px;
   border-radius: 14px;
   border: 2px solid;
   cursor: pointer;
   transition: transform 0.1s, box-shadow 0.2s;
+}
+@media (max-height: 650px) {
+  .action-btn { padding: 8px 6px; }
+  .action-btn .act-icon { font-size: 20px; }
+  .action-btn .act-name { font-size: 12px; }
+  .action-btn .act-hint { display: none; }
 }
 .action-btn:active:not(.disabled) { transform: scale(0.96); }
 .action-btn .act-icon { font-size: 24px; line-height: 1; }
@@ -472,7 +488,7 @@ html, body {
 
 /* ─── TECHNIQUE DRAWER ───────────────────────────────────────────────────── */
 .overlay-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.55);
   z-index: 9;
@@ -483,7 +499,7 @@ html, body {
 .overlay-backdrop.visible { opacity: 1; pointer-events: auto; }
 
 .technique-drawer {
-  position: absolute;
+  position: fixed;
   bottom: 0; left: 0; right: 0;
   background: var(--surface);
   border-top: 1px solid var(--border);
@@ -586,7 +602,7 @@ html, body {
 
 /* ─── RESOLUTION OVERLAY ─────────────────────────────────────────────────── */
 .resolution-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.75);
   z-index: 20;
