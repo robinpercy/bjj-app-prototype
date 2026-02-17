@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>BJJ Duel — Turn-Based Game</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app" class="phone-frame">
+
+    <!-- ═══ START SCREEN ══════════════════════════════════════════════════ -->
+    <div id="screen-start" class="screen active">
+      <div class="start-content">
+        <div class="start-logo">🥋</div>
+        <h1 class="start-title">BJJ DUEL</h1>
+        <p class="start-sub">Turn-Based Positional Combat</p>
+
+        <div class="difficulty-select">
+          <label class="difficulty-label">AI Difficulty</label>
+          <div class="difficulty-buttons">
+            <button class="diff-btn" data-diff="easy">Easy</button>
+            <button class="diff-btn active" data-diff="medium">Medium</button>
+            <button class="diff-btn" data-diff="hard">Hard</button>
+          </div>
+        </div>
+
+        <button id="btn-start" class="primary-btn">Start Match</button>
+        <p class="start-hint">First to 12 points or submission wins</p>
+      </div>
+    </div>
+
+    <!-- ═══ MATCH SCREEN ═════════════════════════════════════════════════ -->
+    <div id="screen-match" class="screen">
+
+      <!-- Top: Opponent bar -->
+      <div class="opponent-bar">
+        <div class="avatar opponent-avatar">👤</div>
+        <div class="opponent-info">
+          <div class="opponent-name">CPU Opponent</div>
+          <div class="opponent-sub">
+            <span id="ai-difficulty-label">Medium</span> AI · Turn <span id="turn-number">1</span>
+          </div>
+        </div>
+        <div class="score-display">
+          <span id="score-ai" class="score-opp">0</span>
+          <span class="score-dash">–</span>
+          <span id="score-player" class="score-you">0</span>
+        </div>
+      </div>
+
+      <!-- Opponent tokens -->
+      <div class="token-strip">
+        <span class="token-strip-label">OPP</span>
+        <div id="ai-tokens" class="token-slots">
+          <div class="token-badge empty"><span class="token-icon">○</span> Empty</div>
+          <div class="token-badge empty"><span class="token-icon">○</span> Empty</div>
+        </div>
+      </div>
+
+      <!-- Center: Position panel -->
+      <div class="position-panel">
+        <div class="mat-bg"></div>
+
+        <div id="position-name" class="position-name">Standing Neutral</div>
+        <div id="initiative-badge" class="initiative-badge neutral">
+          <span class="initiative-dot"></span>
+          <span id="initiative-text">Neutral</span>
+        </div>
+
+        <!-- Silhouette area -->
+        <div class="silhouette-area">
+          <div class="silhouette-ring"></div>
+          <div class="silhouette-ring"></div>
+          <div class="silhouette-ring"></div>
+          <div id="silhouette-container" class="silhouette-figures"></div>
+        </div>
+
+        <!-- Advantage pips -->
+        <div class="advantage-row">
+          <span class="advantage-label">Advantage</span>
+          <div id="advantage-pips" class="advantage-pips"></div>
+          <span id="advantage-value" class="advantage-value">+0</span>
+        </div>
+
+        <!-- Player tokens -->
+        <div class="token-strip player-token-strip">
+          <span class="token-strip-label">YOU</span>
+          <div id="player-tokens" class="token-slots">
+            <div class="token-badge empty"><span class="token-icon">○</span> Empty</div>
+            <div class="token-badge empty"><span class="token-icon">○</span> Empty</div>
+          </div>
+        </div>
+
+        <!-- Turn state indicator -->
+        <div class="turn-indicator">
+          <div id="pulse-dot" class="pulse-dot"></div>
+          <span id="turn-text" class="turn-text">Select Your Action</span>
+        </div>
+      </div>
+
+      <!-- Bottom: Action buttons -->
+      <div id="action-area" class="action-area">
+        <div class="action-label">Choose Action Category</div>
+        <div id="action-grid" class="action-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Technique drawer -->
+      <div id="overlay-backdrop" class="overlay-backdrop"></div>
+      <div id="technique-drawer" class="technique-drawer">
+        <div class="drawer-handle"></div>
+        <div id="drawer-title" class="drawer-title">Techniques</div>
+        <div id="technique-list" class="technique-list"></div>
+        <button id="drawer-close" class="drawer-close-btn">Cancel</button>
+      </div>
+
+      <!-- Resolution overlay -->
+      <div id="resolution-overlay" class="resolution-overlay">
+        <div class="resolution-card">
+          <div id="res-header" class="res-header">Resolution</div>
+          <div class="res-matchup">
+            <div class="res-side res-player">
+              <div class="res-side-label">You</div>
+              <div id="res-player-category" class="res-category"></div>
+              <div id="res-player-technique" class="res-technique"></div>
+              <div id="res-player-score" class="res-score"></div>
+              <div id="res-player-breakdown" class="res-breakdown"></div>
+            </div>
+            <div class="res-vs">VS</div>
+            <div class="res-side res-ai">
+              <div class="res-side-label">CPU</div>
+              <div id="res-ai-category" class="res-category"></div>
+              <div id="res-ai-technique" class="res-technique"></div>
+              <div id="res-ai-score" class="res-score"></div>
+              <div id="res-ai-breakdown" class="res-breakdown"></div>
+            </div>
+          </div>
+          <div id="res-outcome" class="res-outcome"></div>
+          <div id="res-narratives" class="res-narratives"></div>
+          <button id="res-continue" class="primary-btn">Continue</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ MATCH END SCREEN ═════════════════════════════════════════════ -->
+    <div id="screen-end" class="screen">
+      <div class="end-content">
+        <div id="end-icon" class="end-icon">🏆</div>
+        <h2 id="end-title" class="end-title">Victory!</h2>
+        <p id="end-reason" class="end-reason">Points victory!</p>
+        <div id="end-score" class="end-score"></div>
+        <button id="btn-rematch" class="primary-btn">Rematch</button>
+        <button id="btn-menu" class="secondary-btn">Main Menu</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
