@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BJJ Game – Action Selection Mockup</title>
+<style>
+  /* ── Reset & base ──────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0e1117;
+    --surface:   #161b22;
+    --surface2:  #1c2330;
+    --border:    #2a3140;
+    --text:      #e6edf3;
+    --text-dim:  #8b949e;
+    --accent:    #58a6ff;
+    --gold:      #f0c040;
+    --red:       #f85149;
+    --green:     #3fb950;
+    --orange:    #d29922;
+    --purple:    #bc8cff;
+    --top-color: #f85149;
+    --bottom-color: #58a6ff;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  /* ── Phone frame (desktop preview) ────────────────── */
+  .phone-frame {
+    width: 390px;
+    height: 844px;
+    margin: 20px auto;
+    border: 3px solid var(--border);
+    border-radius: 40px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    position: relative;
+  }
+
+  @media (max-width: 430px) {
+    .phone-frame {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      margin: 0;
+      border: none;
+      border-radius: 0;
+    }
+  }
+
+  /* ── Status bar ────────────────────────────────────── */
+  .status-bar {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 15px; color: var(--text); }
+
+  /* ── TOP REGION: Opponent info ─────────────────────── */
+  .opponent-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px 10px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .avatar.opponent { background: var(--red); color: #fff; }
+  .avatar.player   { background: var(--accent); color: #fff; }
+  .opponent-info { flex: 1; }
+  .opponent-name { font-weight: 700; font-size: 15px; }
+  .opponent-sub  { font-size: 12px; color: var(--text-dim); }
+
+  /* ── Score display ─────────────────────────────────── */
+  .score-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+  .score-display .dash { color: var(--text-dim); font-weight: 400; }
+  .score-opp { color: var(--red); }
+  .score-you { color: var(--accent); }
+
+  /* ── Token strip ───────────────────────────────────── */
+  .token-strip {
+    display: flex;
+    gap: 6px;
+    padding: 8px 20px;
+    flex-shrink: 0;
+  }
+  .token-strip-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+    margin-right: 4px;
+    align-self: center;
+  }
+  .token-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .token-badge.active  { background: rgba(240,192,64,0.12); border-color: var(--gold); color: var(--gold); }
+  .token-badge.empty   { background: transparent; border-color: var(--border); color: var(--text-dim); opacity: .4; }
+  .token-icon { font-size: 13px; }
+
+  /* ── CENTER REGION: Position panel ─────────────────── */
+  .position-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Mat background */
+  .mat-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 55%, rgba(88,166,255,0.06) 0%, transparent 100%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px);
+    pointer-events: none;
+  }
+
+  .position-name {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .initiative-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 1;
+  }
+  .initiative-badge.top    { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .initiative-badge.bottom { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
+  .initiative-badge.neutral { background: rgba(255,255,255,0.08); color: var(--text-dim); border: 1px solid var(--border); }
+  .initiative-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .initiative-badge.top .initiative-dot    { background: var(--red); }
+  .initiative-badge.bottom .initiative-dot { background: var(--accent); }
+
+  /* Silhouette area */
+  .silhouette-area {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 16px 0 8px;
+    z-index: 1;
+  }
+  .silhouette-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    opacity: .3;
+  }
+  .silhouette-ring:nth-child(2) { inset: 15px; opacity: .2; }
+  .silhouette-ring:nth-child(3) { inset: 30px; opacity: .1; }
+
+  .silhouette-figures {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* SVG stick figures for side control */
+  .figure-svg {
+    width: 200px;
+    height: 200px;
+  }
+
+  /* Advantage meter */
+  .advantage-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+    margin-top: 4px;
+  }
+  .advantage-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .advantage-pips {
+    display: flex;
+    gap: 4px;
+  }
+  .pip {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    background: transparent;
+  }
+  .pip.filled { background: var(--gold); border-color: var(--gold); }
+
+  /* Player tokens */
+  .player-tokens {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    z-index: 1;
+  }
+
+  /* Turn timer */
+  .turn-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    z-index: 1;
+  }
+  .turn-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .turn-timer {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .pulse-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .4; transform: scale(.7); }
+  }
+
+  /* ── BOTTOM REGION: Action buttons ─────────────────── */
+  .action-area {
+    flex-shrink: 0;
+    padding: 12px 16px 32px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+  .action-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .action-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 16px 8px;
+    border-radius: 14px;
+    border: 2px solid;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .action-btn:active:not(.disabled) {
+    transform: scale(0.96);
+  }
+  .action-btn .action-icon {
+    font-size: 26px;
+    line-height: 1;
+  }
+  .action-btn .action-name {
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .action-btn .action-hint {
+    font-size: 10px;
+    opacity: .7;
+  }
+
+  /* Button states */
+  .action-btn.neutral {
+    background: var(--surface2);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  .action-btn.neutral:hover {
+    border-color: var(--text-dim);
+    box-shadow: 0 0 20px rgba(255,255,255,0.03);
+  }
+
+  .action-btn.optimal {
+    background: linear-gradient(135deg, rgba(63,185,80,0.12), rgba(63,185,80,0.05));
+    border-color: var(--green);
+    color: var(--green);
+    box-shadow: 0 0 24px rgba(63,185,80,0.1);
+  }
+  .action-btn.optimal::after {
+    content: 'BEST';
+    position: absolute;
+    top: 8px; right: 8px;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  .action-btn.risky {
+    background: linear-gradient(135deg, rgba(210,153,34,0.12), rgba(210,153,34,0.04));
+    border-color: var(--orange);
+    color: var(--orange);
+  }
+  .action-btn.risky::after {
+    content: 'RISKY';
+    position: absolute;
+    top: 8px; right: 8px;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--orange);
+    color: var(--bg);
+  }
+
+  .action-btn.disabled {
+    background: var(--surface2);
+    border-color: var(--border);
+    color: var(--text-dim);
+    opacity: .35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ── Technique drawer (hidden by default, shown on tap) ── */
+  .technique-drawer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    padding: 16px 16px 36px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 10;
+  }
+  .technique-drawer.open { transform: translateY(0); }
+  .drawer-handle {
+    width: 36px; height: 4px;
+    background: var(--text-dim);
+    border-radius: 2px;
+    margin: 0 auto 14px;
+    opacity: .4;
+  }
+  .drawer-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--green);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .technique-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .technique-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .technique-item:hover { border-color: var(--text-dim); }
+  .technique-item.locked {
+    opacity: .35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .tech-icon { font-size: 22px; }
+  .tech-info { flex: 1; }
+  .tech-name { font-size: 14px; font-weight: 600; }
+  .tech-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .tech-req {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: rgba(240,192,64,0.12);
+    color: var(--gold);
+    border: 1px solid rgba(240,192,64,0.25);
+    white-space: nowrap;
+  }
+  .tech-req.none { background: transparent; border-color: var(--border); color: var(--text-dim); }
+
+  /* ── Overlay backdrop ──────────────────────────────── */
+  .overlay-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .overlay-backdrop.visible { opacity: 1; pointer-events: auto; }
+
+  /* ── Annotations ───────────────────────────────────── */
+  .annotations {
+    position: absolute;
+    top: 0; right: -220px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 50px;
+  }
+  .annotation {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    position: relative;
+  }
+  .annotation::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 14px;
+    border: 5px solid transparent;
+    border-right-color: var(--border);
+  }
+  .annotation strong { color: var(--text); display: block; margin-bottom: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .8px; }
+
+  @media (max-width: 850px) {
+    .annotations { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div style="display:flex; justify-content:center; gap: 0;">
+<div class="phone-frame" id="phone">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span>BJJ DUEL</span>
+    <span>⚡ 87%</span>
+  </div>
+
+  <!-- TOP REGION: Opponent -->
+  <div class="opponent-bar">
+    <div class="avatar opponent">👤</div>
+    <div class="opponent-info">
+      <div class="opponent-name">CPU Opponent</div>
+      <div class="opponent-sub">Medium AI · Round 1</div>
+    </div>
+    <div class="score-display">
+      <span class="score-opp">4</span>
+      <span class="dash">–</span>
+      <span class="score-you">6</span>
+    </div>
+  </div>
+
+  <!-- Opponent tokens -->
+  <div class="token-strip">
+    <span class="token-strip-label">OPP</span>
+    <div class="token-badge active">
+      <span class="token-icon">🦵</span> Leg Isolated
+    </div>
+    <div class="token-badge empty">
+      <span class="token-icon">○</span> Empty
+    </div>
+  </div>
+
+  <!-- CENTER REGION: Position panel -->
+  <div class="position-panel">
+    <div class="mat-bg"></div>
+
+    <div class="position-name">Side Control</div>
+
+    <div class="initiative-badge top">
+      <span class="initiative-dot"></span>
+      You: Top Position
+    </div>
+
+    <!-- Silhouette -->
+    <div class="silhouette-area">
+      <div class="silhouette-ring"></div>
+      <div class="silhouette-ring"></div>
+      <div class="silhouette-ring"></div>
+      <div class="silhouette-figures">
+        <svg class="figure-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Bottom player (on back) -->
+          <g opacity="0.5">
+            <!-- Body horizontal -->
+            <line x1="50" y1="135" x2="150" y2="135" stroke="#58a6ff" stroke-width="3" stroke-linecap="round"/>
+            <!-- Head -->
+            <circle cx="150" cy="135" r="12" stroke="#58a6ff" stroke-width="2.5" fill="none"/>
+            <!-- Arms up -->
+            <line x1="110" y1="135" x2="120" y2="105" stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="130" y1="135" x2="125" y2="108" stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Legs -->
+            <line x1="60" y1="135" x2="40" y2="160" stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="70" y1="135" x2="55" y2="165" stroke="#58a6ff" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+          <!-- Top player (side control) -->
+          <g>
+            <!-- Body across -->
+            <line x1="85" y1="105" x2="130" y2="85" stroke="#f85149" stroke-width="3.5" stroke-linecap="round"/>
+            <!-- Head -->
+            <circle cx="80" cy="100" r="12" stroke="#f85149" stroke-width="2.5" fill="rgba(248,81,73,0.15)"/>
+            <!-- Arms controlling -->
+            <line x1="100" y1="95" x2="115" y2="120" stroke="#f85149" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="115" y1="90" x2="135" y2="115" stroke="#f85149" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Legs sprawled -->
+            <line x1="130" y1="85" x2="155" y2="70" stroke="#f85149" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="130" y1="85" x2="160" y2="90" stroke="#f85149" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+          <!-- Legend -->
+          <circle cx="30" cy="180" r="5" fill="#f85149" opacity="0.6"/>
+          <text x="40" y="183" fill="#8b949e" font-size="10" font-family="sans-serif">You</text>
+          <circle cx="80" cy="180" r="5" fill="#58a6ff" opacity="0.6"/>
+          <text x="90" y="183" fill="#8b949e" font-size="10" font-family="sans-serif">Opp</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Advantage pips -->
+    <div class="advantage-row">
+      <span class="advantage-label">Advantage</span>
+      <div class="advantage-pips">
+        <div class="pip filled"></div>
+        <div class="pip filled"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+      </div>
+      <span style="font-size:12px; color:var(--gold); font-weight:700;">+2</span>
+    </div>
+
+    <!-- Your tokens -->
+    <div class="player-tokens">
+      <div class="token-badge active">
+        <span class="token-icon">💪</span> Arm Isolated
+      </div>
+      <div class="token-badge empty">
+        <span class="token-icon">○</span> Empty
+      </div>
+    </div>
+
+    <!-- Turn indicator -->
+    <div class="turn-indicator">
+      <div class="pulse-dot"></div>
+      <span class="turn-text">Select Your Action</span>
+      <span class="turn-timer">0:12</span>
+    </div>
+  </div>
+
+  <!-- BOTTOM REGION: Action buttons -->
+  <div class="action-area">
+    <div class="action-label">Choose Action Category</div>
+    <div class="action-grid">
+      <div class="action-btn optimal" onclick="openDrawer('attack')">
+        <span class="action-icon">⚔️</span>
+        <span class="action-name">Attack</span>
+        <span class="action-hint">Submit or advance</span>
+      </div>
+      <div class="action-btn neutral" onclick="openDrawer('control')">
+        <span class="action-icon">🛡️</span>
+        <span class="action-name">Control</span>
+        <span class="action-hint">Maintain position</span>
+      </div>
+      <div class="action-btn disabled">
+        <span class="action-icon">🔄</span>
+        <span class="action-name">Reversal</span>
+        <span class="action-hint">Not available</span>
+      </div>
+      <div class="action-btn risky" onclick="openDrawer('limb')">
+        <span class="action-icon">🎯</span>
+        <span class="action-name">Limb Control</span>
+        <span class="action-hint">Isolate a limb</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technique drawer (slides up on button tap) -->
+  <div class="overlay-backdrop" id="backdrop" onclick="closeDrawer()"></div>
+  <div class="technique-drawer" id="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title" id="drawer-title">Attack Techniques</div>
+    <div class="technique-list" id="technique-list">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- Annotations (visible on wider screens) -->
+<div class="annotations">
+  <div class="annotation">
+    <strong>Top Region</strong>
+    Opponent info, match score (first to 12), and opponent's active tokens.
+  </div>
+  <div class="annotation" style="margin-top: 40px;">
+    <strong>Center Region</strong>
+    Current position name, initiative indicator (Top/Bottom/Neutral), stick-figure silhouette, advantage pips, and your tokens.
+  </div>
+  <div class="annotation" style="margin-top: 120px;">
+    <strong>Turn State</strong>
+    Pulsing dot + countdown timer. Players have 15 seconds to choose an action category, then a technique.
+  </div>
+  <div class="annotation" style="margin-top: 60px;">
+    <strong>Action Buttons</strong>
+    4 categories with visual states:<br>
+    🟢 <b style="color:var(--green)">Optimal</b> – best strategic pick<br>
+    ⚪ <b>Neutral</b> – legal, no modifier<br>
+    🟡 <b style="color:var(--orange)">Risky</b> – warning outline<br>
+    ⬛ <b style="color:var(--text-dim)">Disabled</b> – not legal here
+  </div>
+  <div class="annotation">
+    <strong>Technique Drawer</strong>
+    Tap a category to reveal specific techniques. Some are gated by token requirements.
+  </div>
+</div>
+</div>
+
+<script>
+  const techniques = {
+    attack: {
+      title: 'Attack Techniques',
+      items: [
+        { icon: '💪', name: 'Americana', desc: 'Shoulder lock from top · +3 modifier', req: 'Arm Isolated', locked: false },
+        { icon: '🔒', name: 'Kimura', desc: 'Shoulder lock · +2 modifier', req: 'None', locked: false },
+        { icon: '🔺', name: 'Mount Transition', desc: 'Advance to mount · +1 modifier', req: 'None', locked: false },
+        { icon: '⚡', name: 'Armbar', desc: 'Arm hyperextension · +4 modifier', req: 'Posture Broken', locked: true },
+      ]
+    },
+    control: {
+      title: 'Control Techniques',
+      items: [
+        { icon: '⚖️', name: 'Crossface', desc: 'Maintain pressure · +2 modifier', req: 'None', locked: false },
+        { icon: '🔗', name: 'Underhook Control', desc: 'Dominate frames · +1 modifier', req: 'None', locked: false },
+        { icon: '🏋️', name: 'Chest Pressure', desc: 'Heavy top pressure · +2 modifier', req: 'None', locked: false },
+      ]
+    },
+    limb: {
+      title: 'Limb Control Techniques',
+      items: [
+        { icon: '🎯', name: 'Isolate Near Arm', desc: 'Pin arm to mat · earns Arm Isolated', req: 'None', locked: false },
+        { icon: '🦵', name: 'Thread Leg', desc: 'Leg weave · earns Inside Position', req: 'None', locked: false },
+        { icon: '⚡', name: 'Wrist Control', desc: 'Grab wrist · earns Arm Isolated', req: 'Balance Compromised', locked: true },
+      ]
+    }
+  };
+
+  function openDrawer(category) {
+    const data = techniques[category];
+    if (!data) return;
+    document.getElementById('drawer-title').textContent = data.title;
+    const list = document.getElementById('technique-list');
+    list.innerHTML = data.items.map(t => `
+      <div class="technique-item ${t.locked ? 'locked' : ''}">
+        <span class="tech-icon">${t.icon}</span>
+        <div class="tech-info">
+          <div class="tech-name">${t.name}</div>
+          <div class="tech-desc">${t.desc}</div>
+        </div>
+        <span class="tech-req ${t.req === 'None' ? 'none' : ''}">${t.locked ? '🔒 ' : ''}${t.req}</span>
+      </div>
+    `).join('');
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('backdrop').classList.add('visible');
+  }
+
+  function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('backdrop').classList.remove('visible');
+  }
+
+  // Countdown timer
+  let seconds = 12;
+  const timerEl = document.querySelector('.turn-timer');
+  setInterval(() => {
+    if (seconds > 0) seconds--;
+    timerEl.textContent = `0:${seconds.toString().padStart(2, '0')}`;
+    if (seconds <= 5) timerEl.style.color = '#f85149';
+  }, 1000);
+</script>
+
+</body>
+</html>
