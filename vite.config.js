@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig(({ command }) => ({
-  // Only use the subpath for production builds (GitHub Pages).
+  // Use relative paths so docs/ works from any URL (GitHub Pages, raw.githack permalinks, etc).
   // Dev server always serves from root so port-forwarding works.
-  base: command === 'build' ? '/bjj-app-prototype/' : '/',
+  base: command === 'build' ? './' : '/',
   build: {
     outDir: 'docs',
   },
