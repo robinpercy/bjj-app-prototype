@@ -89,6 +89,19 @@ function onTechniqueSelect(technique) {
 document.getElementById('overlay-backdrop').addEventListener('click', closeTechniqueDrawer);
 document.getElementById('drawer-close').addEventListener('click', closeTechniqueDrawer);
 
+// ─── How to Play ────────────────────────────────────────────────────────────
+
+const htpOverlay = document.getElementById('how-to-play-overlay');
+document.getElementById('btn-how-to-play').addEventListener('click', () => {
+  htpOverlay.classList.add('visible');
+});
+document.getElementById('htp-close').addEventListener('click', () => {
+  htpOverlay.classList.remove('visible');
+});
+htpOverlay.addEventListener('click', (e) => {
+  if (e.target === htpOverlay) htpOverlay.classList.remove('visible');
+});
+
 // ─── Initialize ─────────────────────────────────────────────────────────────
 initStartScreen();
 showScreen('screen-start');

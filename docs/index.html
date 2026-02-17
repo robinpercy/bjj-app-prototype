@@ -6,8 +6,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>BJJ Duel — Turn-Based Game</title>
-  <script type="module" crossorigin src="./assets/index-CHWcrIqx.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DzR14o1N.css">
+  <script type="module" crossorigin src="./assets/index-BHaT78Ch.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BRL0o98K.css">
 </head>
 <body>
   <div id="app" class="phone-frame">
@@ -29,7 +29,107 @@
         </div>
 
         <button id="btn-start" class="primary-btn">Start Match</button>
+        <button id="btn-how-to-play" class="secondary-btn">How to Play</button>
         <p class="start-hint">First to 12 points or submission wins</p>
+      </div>
+    </div>
+
+    <!-- ═══ HOW TO PLAY OVERLAY ═══════════════════════════════════════════ -->
+    <div id="how-to-play-overlay" class="htp-overlay">
+      <div class="htp-card">
+        <div class="htp-header">
+          <h2 class="htp-title">How to Play</h2>
+          <button id="htp-close" class="htp-close-btn">&times;</button>
+        </div>
+
+        <div class="htp-body">
+          <!-- Annotated UI diagram -->
+          <div class="htp-section">
+            <div class="htp-section-title">Game Screen</div>
+            <div class="htp-diagram">
+              <!-- Mini opponent bar -->
+              <div class="htp-dia-row htp-dia-opp-bar">
+                <span class="htp-dia-avatar">&#x1f464;</span>
+                <span class="htp-dia-label-sm">CPU Opponent</span>
+                <span class="htp-dia-score"><span style="color:var(--red)">0</span> &ndash; <span style="color:var(--accent)">3</span></span>
+              </div>
+              <div class="htp-callout" data-num="1">Score &mdash; first to 12 points wins</div>
+
+              <!-- Mini tokens -->
+              <div class="htp-dia-row htp-dia-tokens">
+                <span class="htp-dia-tok empty"></span>
+                <span class="htp-dia-tok filled">&#x1f4aa;</span>
+              </div>
+              <div class="htp-callout" data-num="2">Tokens &mdash; earned via control moves, unlock submissions</div>
+
+              <!-- Mini position panel -->
+              <div class="htp-dia-position">
+                <div class="htp-dia-posname">Closed Guard</div>
+                <div class="htp-dia-badge bottom">You: Bottom</div>
+                <div class="htp-dia-silhouette">
+                  <svg viewBox="0 0 100 60" fill="none"><g opacity="0.5"><line x1="15" y1="40" x2="80" y2="40" stroke="#58a6ff" stroke-width="2"/><circle cx="80" cy="40" r="6" stroke="#58a6ff" stroke-width="1.5" fill="none"/></g><g><circle cx="48" cy="20" r="6" stroke="#f85149" stroke-width="1.5" fill="rgba(248,81,73,0.15)"/><line x1="48" y1="26" x2="48" y2="42" stroke="#f85149" stroke-width="2"/></g></svg>
+                </div>
+                <div class="htp-dia-adv">Advantage <span class="htp-dia-pip filled"></span><span class="htp-dia-pip"></span><span class="htp-dia-pip"></span></div>
+              </div>
+              <div class="htp-callout" data-num="3">Position &mdash; your current grappling situation and who&rsquo;s on top</div>
+
+              <!-- Mini action grid -->
+              <div class="htp-dia-actions">
+                <div class="htp-dia-btn atk">&#x2694;&#xFE0F; Attack</div>
+                <div class="htp-dia-btn ctrl">&#x1f91d; Control</div>
+                <div class="htp-dia-btn def">&#x1f6e1;&#xFE0F; Defense</div>
+                <div class="htp-dia-btn rev best">&#x1f504; Reversal<span class="htp-dia-best">BEST</span></div>
+              </div>
+              <div class="htp-callout" data-num="4">Actions &mdash; pick a category, then choose a technique</div>
+            </div>
+          </div>
+
+          <!-- Rules -->
+          <div class="htp-section">
+            <div class="htp-section-title">Rules</div>
+            <div class="htp-rules">
+              <div class="htp-rule">
+                <span class="htp-rule-num">1</span>
+                <p>Each turn, pick an <strong>action category</strong> (Attack, Control, Defense, or Reversal), then a <strong>specific technique</strong>.</p>
+              </div>
+              <div class="htp-rule">
+                <span class="htp-rule-num">2</span>
+                <p>Categories work like rock-paper-scissors: <strong>Attack &gt; Control &gt; Reversal &gt; Defense &gt; Attack</strong>.</p>
+              </div>
+              <div class="htp-rule">
+                <span class="htp-rule-num">3</span>
+                <p>Each exchange scores points based on <strong>position advantage</strong>, <strong>matchup</strong>, <strong>technique modifier</strong>, <strong>tokens</strong>, and a <strong>dice roll</strong>.</p>
+              </div>
+              <div class="htp-rule">
+                <span class="htp-rule-num">4</span>
+                <p><strong>Control</strong> moves earn tokens. Tokens unlock powerful <strong>submissions</strong> &mdash; the instant-win moves.</p>
+              </div>
+              <div class="htp-rule">
+                <span class="htp-rule-num">5</span>
+                <p>Winning exchanges can <strong>transition</strong> you to better positions. Better position = higher advantage bonus each turn.</p>
+              </div>
+              <div class="htp-rule">
+                <span class="htp-rule-num">6</span>
+                <p>Win by reaching <strong>12 points</strong> or landing a <strong>submission</strong>.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tips -->
+          <div class="htp-section">
+            <div class="htp-section-title">Tips</div>
+            <div class="htp-rules">
+              <div class="htp-rule">
+                <span class="htp-rule-num" style="background:var(--green);color:var(--bg)">&#x2713;</span>
+                <p>The <strong style="color:var(--green)">BEST</strong> badge highlights the recommended category for your current position.</p>
+              </div>
+              <div class="htp-rule">
+                <span class="htp-rule-num" style="background:var(--gold);color:var(--bg)">&#x26A0;</span>
+                <p>From top position: <strong>Attack</strong> to score and advance. From bottom: <strong>Reverse</strong> to escape.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
