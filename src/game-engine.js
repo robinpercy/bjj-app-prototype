@@ -10,6 +10,7 @@ import {
 // ─── Constants ──────────────────────────────────────────────────────────────
 export const MAX_TOKENS = 2;
 export const POINTS_TO_WIN = 12;
+export const MAX_TURNS = 20;
 
 export const TURN_PHASES = {
   MATCH_START:      'match_start',
@@ -39,6 +40,7 @@ export function createGameState() {
     playerIsTop: true,
 
     scores: { player: 0, ai: 0 },
+    advantages: { player: 0, ai: 0 },
 
     // Active tokens (array of token type IDs, max 2 each)
     tokens: { player: [], ai: [] },
@@ -126,8 +128,25 @@ function getOutcomeTier(margin) {
 }
 
 /**
- * Resolve a complete turn. Both players have selected category + technique.
- * Returns a resolution result object.
+ * Get IBJJF scoring label for a technique.
+ */
+function getIbjjfLabel(technique) {
+  if (technique.ibjjfPoints === 2) {
+    if (technique.id === 'takedown') return 'Takedown';
+    return 'Sweep';
+  }
+  if (technique.ibjjfPoints === 3) return 'Guard Pass';
+  if (technique.ibjjfPoints === 4) {
+    if (technique.transition?.position === 'mount') return 'Mount';
+    return 'Back Control';
+  }
+  return '';
+}
+
+/**
+ * Resolve a complete turn using IBJJF position-based scoring.
+ * Points are awarded for achieving positions (transitions), not from exchange margin.
+ * The exchange roll determines who wins; the winner's technique determines what happens.
  */
 export function resolveTurn(state) {
   const playerScore = calculateScore(
@@ -142,22 +161,19 @@ export function resolveTurn(state) {
   );
 
   const margin = Math.abs(playerScore.total - aiScore.total);
-  const winner = playerScore.total >= aiScore.total ? 'player' : 'ai';
-  const loser = winner === 'player' ? 'ai' : 'player';
   const tier = getOutcomeTier(margin);
-  const winnerTechnique = winner === 'player' ? state.playerTechnique : state.aiTechnique;
-  const loserTechnique = winner === 'player' ? state.aiTechnique : state.playerTechnique;
 
   const resolution = {
     playerScore,
     aiScore,
     margin,
-    winner,
-    loser,
+    winner: null,
+    loser: null,
     tier,
-    winnerTechnique,
-    loserTechnique,
+    winnerTechnique: null,
+    loserTechnique: null,
     pointsAwarded: 0,
+    advantagesAwarded: 0,
     tokensGained: [],
     tokensLost: [],
     positionChange: null,
@@ -165,25 +181,33 @@ export function resolveTurn(state) {
     narratives: [],
   };
 
-  // ── Apply outcomes based on tier ──
+  // ── DRAW: margin 0, true stalemate ──
+  if (margin === 0) {
+    resolution.narratives.push('Stalemate! Neither fighter gains an edge.');
+    return resolution;
+  }
 
-  // Check for submission
+  // ── Determine winner ──
+  const winner = playerScore.total > aiScore.total ? 'player' : 'ai';
+  const loser = winner === 'player' ? 'ai' : 'player';
+  resolution.winner = winner;
+  resolution.loser = loser;
+  resolution.winnerTechnique = winner === 'player' ? state.playerTechnique : state.aiTechnique;
+  resolution.loserTechnique = winner === 'player' ? state.aiTechnique : state.playerTechnique;
+
+  const winnerTechnique = resolution.winnerTechnique;
+
+  // ── Check for submission (requires dominant tier) ──
   if (winnerTechnique.isSubmission && tier === OUTCOME_TIERS.DOMINANT) {
     resolution.submission = true;
     resolution.narratives.push(`${winnerTechnique.name} locked in! Submission!`);
     return resolution;
   }
 
-  // Points
-  if (tier === OUTCOME_TIERS.MAJOR) {
-    resolution.pointsAwarded = 1;
-  } else if (tier === OUTCOME_TIERS.DOMINANT) {
-    resolution.pointsAwarded = 2;
-  }
+  // ── Token handling ──
 
-  // Token gains (based on spec: margin 2-3 → 1 token, 4+ → 2 tokens OR transition)
+  // Token gains on major/dominant wins
   if (tier === OUTCOME_TIERS.MAJOR || tier === OUTCOME_TIERS.DOMINANT) {
-    // Winner's technique may award a specific token
     if (winnerTechnique.tokenReward) {
       const added = addToken(state, winner, winnerTechnique.tokenReward);
       if (added) {
@@ -193,7 +217,7 @@ export function resolveTurn(state) {
         );
       }
     }
-    // On dominant, grant an additional generic token if technique didn't grant one
+    // On dominant, grant a bonus token if technique didn't grant one
     if (tier === OUTCOME_TIERS.DOMINANT && !winnerTechnique.tokenReward) {
       const possibleTokens = ['posture_broken', 'inside_position', 'arm_isolated', 'balance_compromised', 'leg_isolated'];
       const currentTokens = state.tokens[winner];
@@ -230,54 +254,62 @@ export function resolveTurn(state) {
     );
   }
 
-  // Position transition — triggers on any win (including minor)
-  // so bottom players can actually escape bad positions
+  // ── Position transition + IBJJF scoring ──
   if (winnerTechnique.transition) {
     const t = winnerTechnique.transition;
     const oldPos = state.position;
-    resolution.positionChange = {
-      from: oldPos,
-      to: t.position,
-    };
-
-    // Calculate bonus points for position advancement
     const newPos = POSITIONS[t.position];
-    const oldPosData = POSITIONS[oldPos];
-    if (newPos.advantage > oldPosData.advantage) {
-      const bonus = newPos.advantage - oldPosData.advantage;
-      resolution.pointsAwarded += bonus;
-      resolution.narratives.push(
-        `Position advance! +${bonus} bonus points.`
-      );
-    }
 
-    // Determine new top/bottom
+    // Execute the transition (position changes whenever the technique wins)
+    resolution.positionChange = { from: oldPos, to: t.position };
+
     if (winner === 'player') {
       state.playerIsTop = t.userBecomesTop;
     } else {
-      // AI used the technique, so AI becomes top if userBecomesTop
       state.playerIsTop = !t.userBecomesTop;
     }
-
     state.position = t.position;
     clearAutoClearTokens(state, t.position);
 
-    resolution.narratives.push(
-      `Transition to ${newPos.name}!`
-    );
-  }
+    resolution.narratives.push(`Transition to ${newPos.name}!`);
 
-  // Award points
-  if (resolution.pointsAwarded > 0) {
-    state.scores[winner] += resolution.pointsAwarded;
-    resolution.narratives.push(
-      `${winner === 'player' ? 'You score' : 'Opponent scores'} ${resolution.pointsAwarded} point${resolution.pointsAwarded > 1 ? 's' : ''}!`
-    );
-  }
-
-  // Narrative for minor outcomes
-  if (tier === OUTCOME_TIERS.MINOR) {
-    resolution.narratives.push('A tense exchange — neither fighter gains much ground.');
+    // IBJJF scoring: points only on major/dominant, advantage on minor
+    if (winnerTechnique.ibjjfPoints > 0) {
+      if (tier === OUTCOME_TIERS.MAJOR || tier === OUTCOME_TIERS.DOMINANT) {
+        resolution.pointsAwarded = winnerTechnique.ibjjfPoints;
+        state.scores[winner] += resolution.pointsAwarded;
+        const label = getIbjjfLabel(winnerTechnique);
+        resolution.narratives.push(
+          `${winner === 'player' ? 'You score' : 'Opponent scores'} ${resolution.pointsAwarded} points! (${label})`
+        );
+      } else {
+        // Minor win with scoring technique: advantage only
+        resolution.advantagesAwarded = 1;
+        state.advantages[winner] += 1;
+        resolution.narratives.push(
+          `Close exchange! ${winner === 'player' ? 'You earn' : 'Opponent earns'} an advantage.`
+        );
+      }
+    }
+  } else {
+    // Non-transition technique
+    if (tier === OUTCOME_TIERS.MAJOR || tier === OUTCOME_TIERS.DOMINANT) {
+      // Strong win with control/defense/near-sub: advantage
+      resolution.advantagesAwarded = 1;
+      state.advantages[winner] += 1;
+      if (winnerTechnique.isSubmission) {
+        resolution.narratives.push(
+          `Close submission attempt! ${winner === 'player' ? 'You earn' : 'Opponent earns'} an advantage.`
+        );
+      } else {
+        resolution.narratives.push(
+          `Dominant control! ${winner === 'player' ? 'You earn' : 'Opponent earns'} an advantage.`
+        );
+      }
+    } else {
+      // Minor win, no transition: tight exchange
+      resolution.narratives.push('A tense exchange — neither fighter gains much ground.');
+    }
   }
 
   return resolution;
@@ -291,6 +323,7 @@ export function startMatch(state) {
   state.position = 'standing_neutral';
   state.playerIsTop = Math.random() > 0.5; // random who is "top" for neutral
   state.scores = { player: 0, ai: 0 };
+  state.advantages = { player: 0, ai: 0 };
   state.tokens = { player: [], ai: [] };
   state.matchWinner = null;
   state.matchEndReason = null;
@@ -336,6 +369,28 @@ export function resolveAndAdvance(state) {
   if (state.scores.ai >= POINTS_TO_WIN) {
     state.matchWinner = 'ai';
     state.matchEndReason = 'Points victory!';
+    state.phase = TURN_PHASES.MATCH_END;
+    return resolution;
+  }
+
+  // Check for turn limit (IBJJF-style time expiry)
+  if (state.turnNumber >= MAX_TURNS) {
+    if (state.scores.player > state.scores.ai) {
+      state.matchWinner = 'player';
+      state.matchEndReason = 'Points victory! (Time expired)';
+    } else if (state.scores.ai > state.scores.player) {
+      state.matchWinner = 'ai';
+      state.matchEndReason = 'Points victory! (Time expired)';
+    } else if (state.advantages.player > state.advantages.ai) {
+      state.matchWinner = 'player';
+      state.matchEndReason = 'Wins by advantages! (Points tied)';
+    } else if (state.advantages.ai > state.advantages.player) {
+      state.matchWinner = 'ai';
+      state.matchEndReason = 'Wins by advantages! (Points tied)';
+    } else {
+      state.matchWinner = Math.random() > 0.5 ? 'player' : 'ai';
+      state.matchEndReason = "Referee's decision! (All tied)";
+    }
     state.phase = TURN_PHASES.MATCH_END;
     return resolution;
   }

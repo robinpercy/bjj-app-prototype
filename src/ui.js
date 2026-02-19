@@ -8,6 +8,7 @@ import {
 import {
   getPlayerRole, getPlayerCategories,
   getPlayerTechniques, playerCanUseTechnique,
+  MAX_TURNS,
 } from './game-engine.js';
 
 // ─── DOM References ─────────────────────────────────────────────────────────
@@ -191,6 +192,7 @@ const TECHNIQUE_ICONS = {
 function getTechDescription(tech) {
   const parts = [];
   if (tech.isSubmission) parts.push('Submission attempt');
+  if (tech.ibjjfPoints > 0) parts.push(`${tech.ibjjfPoints}pts`);
   if (tech.transition) {
     const target = POSITIONS[tech.transition.position];
     parts.push(`→ ${target?.name || tech.transition.position}`);
@@ -221,8 +223,12 @@ export function renderMatchState(state) {
   $('score-player').textContent = state.scores.player;
   $('score-ai').textContent = state.scores.ai;
 
+  // Advantages
+  $('adv-player').textContent = state.advantages.player;
+  $('adv-ai').textContent = state.advantages.ai;
+
   // Turn
-  $('turn-number').textContent = state.turnNumber;
+  $('turn-number').textContent = `${state.turnNumber}/${MAX_TURNS}`;
   $('ai-difficulty-label').textContent =
     state.aiDifficulty.charAt(0).toUpperCase() + state.aiDifficulty.slice(1);
 
@@ -413,10 +419,18 @@ export function showResolution(state, resolution, onContinue) {
   if (resolution.submission) {
     header.textContent = 'SUBMISSION!';
     header.className = 'res-header submission';
+  } else if (resolution.pointsAwarded > 0) {
+    header.textContent = `${resolution.pointsAwarded} POINTS!`;
+    header.className = 'res-header dominant';
+  } else if (resolution.advantagesAwarded > 0) {
+    header.textContent = 'ADVANTAGE';
+    header.className = 'res-header major';
+  } else if (!resolution.winner) {
+    header.textContent = 'STALEMATE';
+    header.className = 'res-header minor';
   } else {
-    const tierLabels = { minor: 'Minor Exchange', major: 'Major Exchange', dominant: 'Dominant Exchange' };
-    header.textContent = tierLabels[resolution.tier] || 'Resolution';
-    header.className = 'res-header ' + resolution.tier;
+    header.textContent = 'NO SCORE';
+    header.className = 'res-header minor';
   }
 
   // Player side
@@ -441,18 +455,30 @@ export function showResolution(state, resolution, onContinue) {
 
   // Outcome
   const outcome = $('res-outcome');
-  if (resolution.winner === 'player') {
-    outcome.textContent = resolution.submission
-      ? `You win by ${resolution.winnerTechnique.name}!`
-      : `You win the exchange! (margin: ${resolution.margin})`;
-    outcome.className = 'res-outcome win';
-  } else if (resolution.margin === 0) {
-    outcome.textContent = 'Even exchange!';
+  if (!resolution.winner) {
+    outcome.textContent = 'Even exchange — stalemate!';
     outcome.className = 'res-outcome draw';
+  } else if (resolution.winner === 'player') {
+    if (resolution.submission) {
+      outcome.textContent = `You win by ${resolution.winnerTechnique.name}!`;
+    } else if (resolution.pointsAwarded > 0) {
+      outcome.textContent = `You score ${resolution.pointsAwarded} points!`;
+    } else if (resolution.advantagesAwarded > 0) {
+      outcome.textContent = 'You earn an advantage!';
+    } else {
+      outcome.textContent = 'You win the exchange!';
+    }
+    outcome.className = 'res-outcome win';
   } else {
-    outcome.textContent = resolution.submission
-      ? `Opponent wins by ${resolution.winnerTechnique.name}!`
-      : `Opponent wins the exchange! (margin: ${resolution.margin})`;
+    if (resolution.submission) {
+      outcome.textContent = `Opponent wins by ${resolution.winnerTechnique.name}!`;
+    } else if (resolution.pointsAwarded > 0) {
+      outcome.textContent = `Opponent scores ${resolution.pointsAwarded} points!`;
+    } else if (resolution.advantagesAwarded > 0) {
+      outcome.textContent = 'Opponent earns an advantage!';
+    } else {
+      outcome.textContent = 'Opponent wins the exchange!';
+    }
     outcome.className = 'res-outcome lose';
   }
 
@@ -490,7 +516,9 @@ export function renderMatchEnd(state, onRematch, onMenu) {
   $('end-score').innerHTML =
     `<span style="color:var(--accent)">${state.scores.player}</span>` +
     ` <span style="color:var(--text-dim)">–</span> ` +
-    `<span style="color:var(--red)">${state.scores.ai}</span>`;
+    `<span style="color:var(--red)">${state.scores.ai}</span>` +
+    `<div style="font-size:14px;color:var(--text-dim);margin-top:4px">` +
+    `Advantages: ${state.advantages.player} – ${state.advantages.ai}</div>`;
 
   // Bind buttons
   const rematch = $('btn-rematch');

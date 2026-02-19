@@ -6,8 +6,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>BJJ Duel — Turn-Based Game</title>
-  <script type="module" crossorigin src="./assets/index-BHaT78Ch.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BRL0o98K.css">
+  <script type="module" crossorigin src="./assets/index-C8dg_y7v.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BqYcXATS.css">
 </head>
 <body>
   <div id="app" class="phone-frame">
@@ -30,7 +30,7 @@
 
         <button id="btn-start" class="primary-btn">Start Match</button>
         <button id="btn-how-to-play" class="secondary-btn">How to Play</button>
-        <p class="start-hint">First to 12 points or submission wins</p>
+        <p class="start-hint">IBJJF rules — score points by advancing position!</p>
       </div>
     </div>
 
@@ -53,7 +53,7 @@
                 <span class="htp-dia-label-sm">CPU Opponent</span>
                 <span class="htp-dia-score"><span style="color:var(--red)">0</span> &ndash; <span style="color:var(--accent)">3</span></span>
               </div>
-              <div class="htp-callout" data-num="1">Score &mdash; first to 12 points wins</div>
+              <div class="htp-callout" data-num="1">Score &mdash; IBJJF points for positions achieved</div>
 
               <!-- Mini tokens -->
               <div class="htp-dia-row htp-dia-tokens">
@@ -84,9 +84,9 @@
             </div>
           </div>
 
-          <!-- Rules -->
+          <!-- Rules (IBJJF) -->
           <div class="htp-section">
-            <div class="htp-section-title">Rules</div>
+            <div class="htp-section-title">IBJJF Scoring</div>
             <div class="htp-rules">
               <div class="htp-rule">
                 <span class="htp-rule-num">1</span>
@@ -94,11 +94,11 @@
               </div>
               <div class="htp-rule">
                 <span class="htp-rule-num">2</span>
-                <p>Categories work like rock-paper-scissors: <strong>Attack &gt; Control &gt; Reversal &gt; Defense &gt; Attack</strong>.</p>
+                <p>Categories work like rock-paper-scissors: <strong>Attack &gt; Control &gt; Reversal &gt; Defense &gt; Attack</strong>. The winner of each exchange is decided by dice + modifiers.</p>
               </div>
               <div class="htp-rule">
                 <span class="htp-rule-num">3</span>
-                <p>Each exchange scores points based on <strong>position advantage</strong>, <strong>matchup</strong>, <strong>technique modifier</strong>, <strong>tokens</strong>, and a <strong>dice roll</strong>.</p>
+                <p>Points are scored for <strong>achieving positions</strong>: <strong>Takedown</strong> (2pts), <strong>Sweep</strong> (2pts), <strong>Guard Pass</strong> (3pts), <strong>Mount</strong> (4pts), <strong>Back Control</strong> (4pts).</p>
               </div>
               <div class="htp-rule">
                 <span class="htp-rule-num">4</span>
@@ -106,11 +106,11 @@
               </div>
               <div class="htp-rule">
                 <span class="htp-rule-num">5</span>
-                <p>Winning exchanges can <strong>transition</strong> you to better positions. Better position = higher advantage bonus each turn.</p>
+                <p>Close exchanges earn <strong>advantages</strong> instead of points. Advantages break ties at match end.</p>
               </div>
               <div class="htp-rule">
                 <span class="htp-rule-num">6</span>
-                <p>Win by reaching <strong>12 points</strong> or landing a <strong>submission</strong>.</p>
+                <p>Win by <strong>submission</strong>, reaching <strong>12 points</strong>, or having the most points when <strong>20 turns</strong> expire.</p>
               </div>
             </div>
           </div>
@@ -145,10 +145,18 @@
             <span id="ai-difficulty-label">Medium</span> AI · Turn <span id="turn-number">1</span>
           </div>
         </div>
-        <div class="score-display">
-          <span id="score-ai" class="score-opp">0</span>
-          <span class="score-dash">–</span>
-          <span id="score-player" class="score-you">0</span>
+        <div class="score-block">
+          <div class="score-display">
+            <span id="score-ai" class="score-opp">0</span>
+            <span class="score-dash">–</span>
+            <span id="score-player" class="score-you">0</span>
+          </div>
+          <div class="adv-display">
+            <span class="adv-label">ADV</span>
+            <span id="adv-ai" class="adv-opp">0</span>
+            <span class="adv-dash">–</span>
+            <span id="adv-player" class="adv-you">0</span>
+          </div>
         </div>
       </div>
 

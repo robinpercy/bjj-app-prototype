@@ -137,6 +137,7 @@ export const POSITIONS = {
 // role: 'top' or 'bottom' (relative to the position's initiative)
 // transition: if present, { position, userBecomesTop } on success
 // isSubmission: true if this can end the match on dominant win
+// ibjjfPoints: IBJJF point value (Takedown 2, Sweep 2, Guard Pass 3, Mount 4, Back Control 4)
 
 export const TECHNIQUES = [
   // ═══ ATTACK ═══════════════════════════════════════════════════════════════
@@ -154,6 +155,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'side_control', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 2,
   },
   {
     id: 'guard_pull',
@@ -169,6 +171,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'closed_guard', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'knee_cut_pass',
@@ -184,6 +187,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'side_control', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 3,
   },
   {
     id: 'torreando_pass',
@@ -198,6 +202,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'side_control', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 3,
   },
   {
     id: 'mount_transition',
@@ -213,6 +218,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'mount', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 4,
   },
   {
     id: 'back_take',
@@ -228,6 +234,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'back_control', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 4,
   },
   {
     id: 'americana',
@@ -243,6 +250,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'kimura',
@@ -259,6 +267,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'cross_collar_choke',
@@ -274,6 +283,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'rear_naked_choke',
@@ -288,6 +298,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'armbar',
@@ -304,6 +315,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'triangle',
@@ -319,6 +331,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'guillotine',
@@ -336,6 +349,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'darce_choke',
@@ -351,6 +365,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'ezekiel_choke',
@@ -365,6 +380,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
   {
     id: 'ankle_lock',
@@ -380,6 +396,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: true,
+    ibjjfPoints: 0,
   },
 
   // ═══ CONTROL ══════════════════════════════════════════════════════════════
@@ -397,6 +414,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'chest_pressure',
@@ -412,6 +430,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'seatbelt_grip',
@@ -426,6 +445,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'head_control',
@@ -440,6 +460,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'collar_tie',
@@ -455,6 +476,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'posture_break',
@@ -471,6 +493,7 @@ export const TECHNIQUES = [
     tokenReward: 'posture_broken',
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'underhook_control',
@@ -488,6 +511,7 @@ export const TECHNIQUES = [
     tokenReward: 'inside_position',
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'wrist_control',
@@ -512,6 +536,7 @@ export const TECHNIQUES = [
     tokenReward: 'arm_isolated',
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'leg_lace',
@@ -529,6 +554,7 @@ export const TECHNIQUES = [
     tokenReward: 'leg_isolated',
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'knee_shield_frame',
@@ -544,6 +570,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'body_lock',
@@ -560,6 +587,7 @@ export const TECHNIQUES = [
     tokenReward: 'balance_compromised',
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
 
   // ═══ DEFENSE ══════════════════════════════════════════════════════════════
@@ -577,6 +605,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'guard_recovery',
@@ -592,6 +621,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'closed_guard', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'posture_up',
@@ -608,6 +638,7 @@ export const TECHNIQUES = [
     tokenRemove: 'posture_broken',
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'hand_fighting',
@@ -632,6 +663,7 @@ export const TECHNIQUES = [
     tokenRemove: 'arm_isolated',
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'bridge',
@@ -647,6 +679,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'turtle_up',
@@ -663,6 +696,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'turtle', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'sprawl',
@@ -678,6 +712,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'shell_guard',
@@ -696,6 +731,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: null,
     isSubmission: false,
+    ibjjfPoints: 0,
   },
 
   // ═══ REVERSAL ═════════════════════════════════════════════════════════════
@@ -712,6 +748,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'mount', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 2,
   },
   {
     id: 'hip_bump_sweep',
@@ -726,6 +763,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'mount', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 2,
   },
   {
     id: 'elbow_escape',
@@ -740,6 +778,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'half_guard', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'trap_and_roll',
@@ -754,6 +793,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'closed_guard', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 2,
   },
   {
     id: 'granby_roll',
@@ -768,6 +808,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'closed_guard', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'technical_standup',
@@ -784,6 +825,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'standing_neutral', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'back_escape',
@@ -798,6 +840,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'half_guard', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'old_school_sweep',
@@ -812,6 +855,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'side_control', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 2,
   },
   {
     id: 'sit_out',
@@ -827,6 +871,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'standing_neutral', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'knee_shield_recover',
@@ -842,6 +887,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'knee_shield', userBecomesTop: false },
     isSubmission: false,
+    ibjjfPoints: 0,
   },
   {
     id: 'headlock_escape',
@@ -856,6 +902,7 @@ export const TECHNIQUES = [
     tokenReward: null,
     transition: { position: 'back_control', userBecomesTop: true },
     isSubmission: false,
+    ibjjfPoints: 4,
   },
 ];
 

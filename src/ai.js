@@ -36,17 +36,16 @@ function scoreCategoryTechnique(positionId, aiRole, category, technique, aiToken
     }
   }
 
-  // Transitions that improve position are attractive
+  // Transitions that score IBJJF points are very attractive
   if (technique.transition) {
+    if (technique.ibjjfPoints > 0) {
+      score += technique.ibjjfPoints * 1.5;
+    }
+    // Non-scoring transitions (escapes) are valuable from bad positions
     const target = POSITIONS[technique.transition.position];
-    if (target) {
-      const advGain = technique.transition.userBecomesTop
-        ? target.advantage - (aiRole === 'top' ? pos.advantage : 0)
-        : 0 - pos.advantage;
-      score += advGain * 2;
-      // Any transition from neutral is good
-      if (pos.advantage === 0 && target.advantage > 0 && technique.transition.userBecomesTop) {
-        score += 3;
+    if (target && !technique.transition.userBecomesTop) {
+      if (aiRole === 'bottom' && pos.advantage > 0) {
+        score += pos.advantage * 2;
       }
     }
   }
