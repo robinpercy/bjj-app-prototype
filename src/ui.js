@@ -248,15 +248,15 @@ export function renderMatchState(state) {
   // Silhouette
   $('silhouette-container').innerHTML = POSITION_SVGS[state.position] || POSITION_SVGS.standing_neutral;
 
-  // Advantage pips
-  const pips = $('advantage-pips');
+  // Control pips
+  const pips = $('control-pips');
   pips.innerHTML = '';
   for (let i = 0; i < 3; i++) {
     const pip = document.createElement('div');
-    pip.className = 'pip' + (i < pos.advantage ? ' filled' : '');
+    pip.className = 'pip' + (i < pos.control ? ' filled' : '');
     pips.appendChild(pip);
   }
-  $('advantage-value').textContent = pos.advantage > 0 ? `+${pos.advantage}` : '+0';
+  $('control-value').textContent = pos.control > 0 ? `+${pos.control}` : '+0';
 
   // Tokens
   renderTokens('player-tokens', state.tokens.player);
@@ -303,7 +303,7 @@ export function renderActionButtons(state, onCategorySelect) {
 
   // Determine which category is "optimal" — the one that has the highest expected value
   // Standing neutral: attack (takedowns) is the best play for both players
-  // Top position: attack is optimal (you have the advantage)
+  // Top position: attack is optimal (you have control)
   // Bottom position: reversal is optimal (escape and improve position)
   const pos = POSITIONS[state.position];
   const optimalCategories = pos.initiative === 'neutral'
@@ -440,7 +440,7 @@ export function showResolution(state, resolution, onContinue) {
   $('res-player-score').textContent = resolution.playerScore.total;
   const pb = resolution.playerScore.breakdown;
   $('res-player-breakdown').innerHTML =
-    `Pos: ${pb.posAdvantage} · Match: ${pb.matchupMod > 0 ? '+' : ''}${pb.matchupMod}<br>` +
+    `Ctrl: ${pb.posControl} · Match: ${pb.matchupMod > 0 ? '+' : ''}${pb.matchupMod}<br>` +
     `Tech: +${pb.techniqueMod} · Tok: +${pb.tokenMod} · Die: ${pb.die}`;
 
   // AI side
@@ -450,7 +450,7 @@ export function showResolution(state, resolution, onContinue) {
   $('res-ai-score').textContent = resolution.aiScore.total;
   const ab = resolution.aiScore.breakdown;
   $('res-ai-breakdown').innerHTML =
-    `Pos: ${ab.posAdvantage} · Match: ${ab.matchupMod > 0 ? '+' : ''}${ab.matchupMod}<br>` +
+    `Ctrl: ${ab.posControl} · Match: ${ab.matchupMod > 0 ? '+' : ''}${ab.matchupMod}<br>` +
     `Tech: +${ab.techniqueMod} · Tok: +${ab.tokenMod} · Die: ${ab.die}`;
 
   // Outcome

@@ -33,7 +33,7 @@ export const POSITIONS = {
   standing_neutral: {
     id: 'standing_neutral',
     name: 'Standing Neutral',
-    advantage: 0,
+    control: 0,
     initiative: 'neutral',
     topActions:    ['attack', 'control', 'defense'],
     bottomActions: ['attack', 'control', 'defense'],
@@ -43,7 +43,7 @@ export const POSITIONS = {
   closed_guard: {
     id: 'closed_guard',
     name: 'Closed Guard',
-    advantage: 0,
+    control: 0,
     initiative: 'bottom',
     topActions:    ['attack', 'control', 'defense'],
     bottomActions: ['attack', 'control', 'reversal'],
@@ -53,7 +53,7 @@ export const POSITIONS = {
   open_guard: {
     id: 'open_guard',
     name: 'Open Guard',
-    advantage: 0,
+    control: 0,
     initiative: 'bottom',
     topActions:    ['attack', 'control'],
     bottomActions: ['attack', 'control', 'defense', 'reversal'],
@@ -63,7 +63,7 @@ export const POSITIONS = {
   half_guard: {
     id: 'half_guard',
     name: 'Half Guard',
-    advantage: 1,
+    control: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal', 'control'],
@@ -73,7 +73,7 @@ export const POSITIONS = {
   side_control: {
     id: 'side_control',
     name: 'Side Control',
-    advantage: 1,
+    control: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal'],
@@ -83,7 +83,7 @@ export const POSITIONS = {
   mount: {
     id: 'mount',
     name: 'Mount',
-    advantage: 2,
+    control: 2,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal'],
@@ -93,7 +93,7 @@ export const POSITIONS = {
   back_control: {
     id: 'back_control',
     name: 'Back Control',
-    advantage: 2,
+    control: 2,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal'],
@@ -103,7 +103,7 @@ export const POSITIONS = {
   turtle: {
     id: 'turtle',
     name: 'Turtle',
-    advantage: 1,
+    control: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal'],
@@ -113,7 +113,7 @@ export const POSITIONS = {
   front_headlock: {
     id: 'front_headlock',
     name: 'Front Headlock',
-    advantage: 1,
+    control: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
     bottomActions: ['defense', 'reversal'],
@@ -123,7 +123,7 @@ export const POSITIONS = {
   knee_shield: {
     id: 'knee_shield',
     name: 'Knee Shield Half Guard',
-    advantage: 0,
+    control: 0,
     initiative: 'bottom',
     topActions:    ['attack', 'control'],
     bottomActions: ['attack', 'defense', 'reversal', 'control'],

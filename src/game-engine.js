@@ -101,11 +101,11 @@ export function clearAutoClearTokens(state, positionId) {
 
 /**
  * Calculate resolution score for one player.
- * Score = Position Advantage + Matchup Modifier + Technique Modifier + Token Modifier + d6
+ * Score = Position Control + Matchup Modifier + Technique Modifier + Token Modifier + d6
  */
 function calculateScore(positionId, isTopPlayer, category, technique, opponentCategory, tokens) {
   const pos = POSITIONS[positionId];
-  const posAdvantage = isTopPlayer ? pos.advantage : 0;
+  const posControl = isTopPlayer ? pos.control : 0;
   const matchupMod = getMatchupModifier(category, opponentCategory);
   const techniqueMod = technique.modifier;
   // Token modifier: +1 for each active token
@@ -113,8 +113,8 @@ function calculateScore(positionId, isTopPlayer, category, technique, opponentCa
   const die = rollD6();
 
   return {
-    total: posAdvantage + matchupMod + techniqueMod + tokenMod + die,
-    breakdown: { posAdvantage, matchupMod, techniqueMod, tokenMod, die },
+    total: posControl + matchupMod + techniqueMod + tokenMod + die,
+    breakdown: { posControl, matchupMod, techniqueMod, tokenMod, die },
   };
 }
 

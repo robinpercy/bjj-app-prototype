@@ -351,20 +351,20 @@ body {
   .silhouette-area { width: min(160px, 35vw); }
 }
 
-/* ── Advantage row ── */
-.advantage-row {
+/* ── Control row ── */
+.control-row {
   display: flex;
   align-items: center;
   gap: 8px;
   z-index: 1;
 }
-.advantage-label {
+.control-label {
   font-size: 11px;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
-.advantage-pips {
+.control-pips {
   display: flex;
   gap: 3px;
 }
@@ -379,7 +379,7 @@ body {
   background: var(--gold);
   border-color: var(--gold);
 }
-.advantage-value {
+.control-value {
   font-size: 12px;
   color: var(--gold);
   font-weight: 700;

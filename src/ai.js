@@ -44,8 +44,8 @@ function scoreCategoryTechnique(positionId, aiRole, category, technique, aiToken
     // Non-scoring transitions (escapes) are valuable from bad positions
     const target = POSITIONS[technique.transition.position];
     if (target && !technique.transition.userBecomesTop) {
-      if (aiRole === 'bottom' && pos.advantage > 0) {
-        score += pos.advantage * 2;
+      if (aiRole === 'bottom' && pos.control > 0) {
+        score += pos.control * 2;
       }
     }
   }
@@ -73,7 +73,7 @@ function scoreCategoryTechnique(positionId, aiRole, category, technique, aiToken
   }
 
   // Defense is important when in bad position
-  if (category === 'defense' && aiRole === 'bottom' && pos.advantage >= 2) {
+  if (category === 'defense' && aiRole === 'bottom' && pos.control >= 2) {
     score += 2;
   }
 
