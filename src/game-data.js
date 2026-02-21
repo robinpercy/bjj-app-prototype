@@ -13,7 +13,7 @@ export const TOKEN_TYPES = {
 // ─── Action Categories ──────────────────────────────────────────────────────
 export const CATEGORIES = {
   attack:   { id: 'attack',   name: 'Attack',   icon: '⚔️', hint: 'Submit or advance' },
-  control:  { id: 'control',  name: 'Control',  icon: '🛡️', hint: 'Maintain & pressure' },
+  control:  { id: 'control',  name: 'Increase Control',  icon: '🛡️', hint: 'Maintain & pressure' },
   defense:  { id: 'defense',  name: 'Defense',  icon: '🔒', hint: 'Protect & survive' },
   reversal: { id: 'reversal', name: 'Reversal', icon: '🔄', hint: 'Escape & reverse' },
 };
