@@ -237,13 +237,13 @@ export function renderMatchState(state) {
 
   // Initiative
   const badge = $('initiative-badge');
-  badge.className = 'initiative-badge ' + (playerRole === 'top' ? 'top' : playerRole === 'bottom' ? 'bottom' : 'neutral');
-  const initText = playerRole === 'top'
-    ? 'You: Top Position'
-    : pos.initiative === 'neutral'
-      ? 'Neutral'
-      : 'You: Bottom Position';
-  $('initiative-text').textContent = initText;
+  if (pos.initiative === 'neutral') {
+    badge.className = 'initiative-badge neutral';
+    $('initiative-text').textContent = 'Neutral';
+  } else {
+    badge.className = 'initiative-badge ' + (playerRole === 'top' ? 'top' : 'bottom');
+    $('initiative-text').textContent = playerRole === 'top' ? 'You: Top Position' : 'You: Bottom Position';
+  }
 
   // Silhouette
   $('silhouette-container').innerHTML = POSITION_SVGS[state.position] || POSITION_SVGS.standing_neutral;
@@ -322,7 +322,7 @@ export function renderActionButtons(state, onCategorySelect) {
 
   const playerRole = getPlayerRole(state);
   const available = getPlayerCategories(state);
-  const allCategories = ['attack', 'control', 'defense', 'sweep'];
+  const allCategories = ['control', 'attack', 'defense', 'sweep'];
 
   // Determine which category is "optimal" — the one that has the highest expected value
   // Standing neutral: attack (takedowns) is the best play for both players
