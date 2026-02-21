@@ -15,17 +15,16 @@ export const CATEGORIES = {
   attack:   { id: 'attack',   name: 'Attack',   icon: '⚔️', hint: 'Submit or advance' },
   control:  { id: 'control',  name: 'Increase Control',  icon: '🛡️', hint: 'Maintain & pressure' },
   defense:  { id: 'defense',  name: 'Defense',  icon: '🔒', hint: 'Protect & survive' },
-  reversal: { id: 'reversal', name: 'Reversal', icon: '🔄', hint: 'Escape & reverse' },
+  sweep: { id: 'sweep', name: 'Sweep', icon: '🔄', hint: 'Escape & reposition' },
 };
 
 // ─── Matchup Table (winner category → loser category → modifier) ────────────
-// Attack > Control > Reversal > Defense > Attack  (each beats next by +1)
-// Reduced from +/-2 to +/-1 so wrong guesses aren't devastating
+// Defense > Control > Sweep > Attack > Defense  (each beats next by +1)
 export const MATCHUPS = {
-  attack:   { attack: 0, control:  1, defense: -1, reversal:  0 },
-  control:  { attack: -1, control: 0, defense:  0, reversal:  1 },
-  defense:  { attack:  1, control: 0, defense:  0, reversal: -1 },
-  reversal: { attack:  0, control: -1, defense: 1, reversal:  0 },
+  attack:   { attack: 0, control:  0, defense:  1, sweep: -1 },
+  control:  { attack: 0, control:  0, defense: -1, sweep:  1 },
+  defense:  { attack: -1, control: 1, defense:  0, sweep:  0 },
+  sweep:    { attack:  1, control: -1, defense:  0, sweep:  0 },
 };
 
 // ─── Positions ──────────────────────────────────────────────────────────────
@@ -33,7 +32,6 @@ export const POSITIONS = {
   standing_neutral: {
     id: 'standing_neutral',
     name: 'Standing Neutral',
-    control: 0,
     initiative: 'neutral',
     topActions:    ['attack', 'control', 'defense'],
     bottomActions: ['attack', 'control', 'defense'],
@@ -43,90 +41,81 @@ export const POSITIONS = {
   closed_guard: {
     id: 'closed_guard',
     name: 'Closed Guard',
-    control: 0,
     initiative: 'bottom',
     topActions:    ['attack', 'control', 'defense'],
-    bottomActions: ['attack', 'control', 'reversal'],
+    bottomActions: ['attack', 'control', 'sweep'],
     autoClearTokens: [],
     description: 'Bottom player has legs wrapped around top player.',
   },
   open_guard: {
     id: 'open_guard',
     name: 'Open Guard',
-    control: 0,
     initiative: 'bottom',
     topActions:    ['attack', 'control'],
-    bottomActions: ['attack', 'control', 'defense', 'reversal'],
+    bottomActions: ['attack', 'control', 'defense', 'sweep'],
     autoClearTokens: [],
     description: 'Bottom player using feet and grips to control distance.',
   },
   half_guard: {
     id: 'half_guard',
     name: 'Half Guard',
-    control: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
-    bottomActions: ['defense', 'reversal', 'control'],
+    bottomActions: ['defense', 'sweep', 'control'],
     autoClearTokens: [],
     description: 'Bottom player trapping one of top player\'s legs.',
   },
   side_control: {
     id: 'side_control',
     name: 'Side Control',
-    control: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
-    bottomActions: ['defense', 'reversal'],
+    bottomActions: ['defense', 'sweep'],
     autoClearTokens: ['balance_compromised'],
     description: 'Top player pinning from the side, chest-to-chest.',
   },
   mount: {
     id: 'mount',
     name: 'Mount',
-    control: 2,
     initiative: 'top',
     topActions:    ['attack', 'control'],
-    bottomActions: ['defense', 'reversal'],
+    bottomActions: ['defense', 'sweep'],
     autoClearTokens: ['balance_compromised'],
     description: 'Top player sitting on bottom player\'s torso.',
   },
   back_control: {
     id: 'back_control',
     name: 'Back Control',
-    control: 2,
     initiative: 'top',
     topActions:    ['attack', 'control'],
-    bottomActions: ['defense', 'reversal'],
+    bottomActions: ['defense', 'sweep'],
     autoClearTokens: ['balance_compromised', 'inside_position'],
     description: 'Behind the opponent with hooks or body triangle.',
   },
   turtle: {
     id: 'turtle',
     name: 'Turtle',
-    control: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
-    bottomActions: ['defense', 'reversal'],
+    bottomActions: ['defense', 'sweep'],
     autoClearTokens: ['posture_broken'],
     description: 'Bottom player balled up on hands and knees.',
   },
   front_headlock: {
     id: 'front_headlock',
     name: 'Front Headlock',
-    control: 1,
     initiative: 'top',
     topActions:    ['attack', 'control'],
-    bottomActions: ['defense', 'reversal'],
+    bottomActions: ['defense', 'sweep'],
     autoClearTokens: [],
     description: 'Top player controlling the head from the front.',
   },
   knee_shield: {
     id: 'knee_shield',
     name: 'Knee Shield Half Guard',
-    control: 0,
     initiative: 'bottom',
     topActions:    ['attack', 'control'],
-    bottomActions: ['attack', 'defense', 'reversal', 'control'],
+    bottomActions: ['attack', 'defense', 'sweep', 'control'],
     autoClearTokens: [],
     description: 'Half guard variant with knee frame creating distance.',
   },
@@ -734,11 +723,11 @@ export const TECHNIQUES = [
     ibjjfPoints: 0,
   },
 
-  // ═══ REVERSAL ═════════════════════════════════════════════════════════════
+  // ═══ SWEEP ═══════════════════════════════════════════════════════════════
   {
     id: 'scissor_sweep',
     name: 'Scissor Sweep',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'closed_guard', role: 'bottom' },
     ],
@@ -753,7 +742,7 @@ export const TECHNIQUES = [
   {
     id: 'hip_bump_sweep',
     name: 'Hip Bump Sweep',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'closed_guard', role: 'bottom' },
     ],
@@ -768,7 +757,7 @@ export const TECHNIQUES = [
   {
     id: 'elbow_escape',
     name: 'Elbow Escape',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'mount', role: 'bottom' },
     ],
@@ -783,7 +772,7 @@ export const TECHNIQUES = [
   {
     id: 'trap_and_roll',
     name: 'Trap & Roll',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'mount', role: 'bottom' },
     ],
@@ -798,7 +787,7 @@ export const TECHNIQUES = [
   {
     id: 'granby_roll',
     name: 'Granby Roll',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'turtle', role: 'bottom' },
     ],
@@ -813,7 +802,7 @@ export const TECHNIQUES = [
   {
     id: 'technical_standup',
     name: 'Technical Standup',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'open_guard', role: 'bottom' },
       { position: 'closed_guard', role: 'bottom' },
@@ -830,7 +819,7 @@ export const TECHNIQUES = [
   {
     id: 'back_escape',
     name: 'Back Escape',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'back_control', role: 'bottom' },
     ],
@@ -845,7 +834,7 @@ export const TECHNIQUES = [
   {
     id: 'old_school_sweep',
     name: 'Old School Sweep',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'half_guard', role: 'bottom' },
     ],
@@ -860,7 +849,7 @@ export const TECHNIQUES = [
   {
     id: 'sit_out',
     name: 'Sit Out',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'turtle', role: 'bottom' },
       { position: 'front_headlock', role: 'bottom' },
@@ -876,7 +865,7 @@ export const TECHNIQUES = [
   {
     id: 'knee_shield_recover',
     name: 'Reguard to Knee Shield',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'side_control', role: 'bottom' },
       { position: 'half_guard', role: 'bottom' },
@@ -892,7 +881,7 @@ export const TECHNIQUES = [
   {
     id: 'headlock_escape',
     name: 'Duck Under',
-    category: 'reversal',
+    category: 'sweep',
     availableFrom: [
       { position: 'front_headlock', role: 'bottom' },
     ],

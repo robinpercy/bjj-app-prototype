@@ -379,6 +379,14 @@ body {
   background: var(--gold);
   border-color: var(--gold);
 }
+.pip.filled-ai {
+  background: var(--red);
+  border-color: var(--red);
+}
+.pip.filled-player {
+  background: var(--accent);
+  border-color: var(--accent);
+}
 .control-value {
   font-size: 12px;
   color: var(--gold);

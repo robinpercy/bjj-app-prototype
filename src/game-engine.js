@@ -45,6 +45,9 @@ export function createGameState() {
     // Active tokens (array of token type IDs, max 2 each)
     tokens: { player: [], ai: [] },
 
+    // Control tug-of-war (0-2 each, only one side holds points at a time)
+    control: { player: 0, ai: 0 },
+
     // Current turn selections
     playerCategory: null,
     playerTechnique: null,
@@ -103,9 +106,8 @@ export function clearAutoClearTokens(state, positionId) {
  * Calculate resolution score for one player.
  * Score = Position Control + Matchup Modifier + Technique Modifier + Token Modifier + d6
  */
-function calculateScore(positionId, isTopPlayer, category, technique, opponentCategory, tokens) {
-  const pos = POSITIONS[positionId];
-  const posControl = isTopPlayer ? pos.control : 0;
+function calculateScore(positionId, isTopPlayer, category, technique, opponentCategory, tokens, controlPoints) {
+  const posControl = controlPoints;
   const matchupMod = getMatchupModifier(category, opponentCategory);
   const techniqueMod = technique.modifier;
   // Token modifier: +1 for each active token
@@ -152,12 +154,12 @@ export function resolveTurn(state) {
   const playerScore = calculateScore(
     state.position, state.playerIsTop,
     state.playerCategory, state.playerTechnique,
-    state.aiCategory, state.tokens.player
+    state.aiCategory, state.tokens.player, state.control.player
   );
   const aiScore = calculateScore(
     state.position, !state.playerIsTop,
     state.aiCategory, state.aiTechnique,
-    state.playerCategory, state.tokens.ai
+    state.playerCategory, state.tokens.ai, state.control.ai
   );
 
   const margin = Math.abs(playerScore.total - aiScore.total);
@@ -177,6 +179,7 @@ export function resolveTurn(state) {
     tokensGained: [],
     tokensLost: [],
     positionChange: null,
+    controlShift: null,
     submission: false,
     narratives: [],
   };
@@ -202,6 +205,20 @@ export function resolveTurn(state) {
     resolution.submission = true;
     resolution.narratives.push(`${winnerTechnique.name} locked in! Submission!`);
     return resolution;
+  }
+
+  // ── Control shifting ──
+  const winnerCat = winner === 'player' ? state.playerCategory : state.aiCategory;
+  if (winnerCat === 'control') {
+    if (state.control[loser] > 0) {
+      state.control[loser] -= 1;
+      resolution.controlShift = { lost: loser };
+      resolution.narratives.push(`${loser === 'player' ? 'You lose' : 'Opponent loses'} a control point!`);
+    } else if (state.control[winner] < 2) {
+      state.control[winner] += 1;
+      resolution.controlShift = { gained: winner };
+      resolution.narratives.push(`${winner === 'player' ? 'You gain' : 'Opponent gains'} a control point!`);
+    }
   }
 
   // ── Token handling ──
@@ -325,6 +342,7 @@ export function startMatch(state) {
   state.scores = { player: 0, ai: 0 };
   state.advantages = { player: 0, ai: 0 };
   state.tokens = { player: [], ai: [] };
+  state.control = { player: 0, ai: 0 };
   state.matchWinner = null;
   state.matchEndReason = null;
   state.lastResolution = null;

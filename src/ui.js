@@ -182,7 +182,7 @@ const TECHNIQUE_ICONS = {
   // Defense
   frame_and_shrimp: '🦐', guard_recovery: '🔄', posture_up: '⬆️',
   hand_fighting: '✋', bridge: '🌉', turtle_up: '🐢', sprawl: '🏋️', shell_guard: '🛡️',
-  // Reversal
+  // Sweep
   scissor_sweep: '✂️', hip_bump_sweep: '💥', elbow_escape: '🔓',
   trap_and_roll: '🎲', granby_roll: '🌀', technical_standup: '🧍',
   back_escape: '🏃', old_school_sweep: '🔄', sit_out: '↩️',
@@ -248,15 +248,38 @@ export function renderMatchState(state) {
   // Silhouette
   $('silhouette-container').innerHTML = POSITION_SVGS[state.position] || POSITION_SVGS.standing_neutral;
 
-  // Control pips
+  // Control pips (5-pip tug-of-war: AI+2, AI+1, neutral, P+1, P+2)
   const pips = $('control-pips');
   pips.innerHTML = '';
-  for (let i = 0; i < 3; i++) {
+  const aiCtrl = state.control.ai;
+  const plCtrl = state.control.player;
+  for (let i = 0; i < 5; i++) {
     const pip = document.createElement('div');
-    pip.className = 'pip' + (i < pos.control ? ' filled' : '');
+    if (i < 2) {
+      // AI side (left): index 0 = AI+2, index 1 = AI+1
+      const aiLevel = 2 - i; // 2, 1
+      pip.className = 'pip' + (aiCtrl >= aiLevel ? ' filled-ai' : '');
+    } else if (i === 2) {
+      // Center neutral pip
+      pip.className = 'pip';
+    } else {
+      // Player side (right): index 3 = P+1, index 4 = P+2
+      const plLevel = i - 2; // 1, 2
+      pip.className = 'pip' + (plCtrl >= plLevel ? ' filled-player' : '');
+    }
     pips.appendChild(pip);
   }
-  $('control-value').textContent = pos.control > 0 ? `+${pos.control}` : '+0';
+  // Value label
+  if (plCtrl > 0) {
+    $('control-value').textContent = `+${plCtrl}`;
+    $('control-value').style.color = '';
+  } else if (aiCtrl > 0) {
+    $('control-value').textContent = `-${aiCtrl}`;
+    $('control-value').style.color = 'var(--red)';
+  } else {
+    $('control-value').textContent = '+0';
+    $('control-value').style.color = '';
+  }
 
   // Tokens
   renderTokens('player-tokens', state.tokens.player);
@@ -299,18 +322,18 @@ export function renderActionButtons(state, onCategorySelect) {
 
   const playerRole = getPlayerRole(state);
   const available = getPlayerCategories(state);
-  const allCategories = ['attack', 'control', 'defense', 'reversal'];
+  const allCategories = ['attack', 'control', 'defense', 'sweep'];
 
   // Determine which category is "optimal" — the one that has the highest expected value
   // Standing neutral: attack (takedowns) is the best play for both players
   // Top position: attack is optimal (you have control)
-  // Bottom position: reversal is optimal (escape and improve position)
+  // Bottom position: sweep is optimal (escape and improve position)
   const pos = POSITIONS[state.position];
   const optimalCategories = pos.initiative === 'neutral'
     ? ['attack']
     : playerRole === 'top'
       ? ['attack']
-      : ['reversal'];
+      : ['sweep'];
 
   for (const catId of allCategories) {
     const cat = CATEGORIES[catId];

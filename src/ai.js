@@ -20,9 +20,8 @@ const DIFFICULTY = {
  * Score a (category, technique) pair for the AI based on position context.
  * Higher score = more "optimal" for the AI.
  */
-function scoreCategoryTechnique(positionId, aiRole, category, technique, aiTokens, opponentTokens) {
+function scoreCategoryTechnique(positionId, aiRole, category, technique, aiTokens, opponentTokens, aiControl, opponentControl) {
   let score = 0;
-  const pos = POSITIONS[positionId];
 
   // Technique modifier contributes to attractiveness
   score += technique.modifier * 2;
@@ -41,12 +40,9 @@ function scoreCategoryTechnique(positionId, aiRole, category, technique, aiToken
     if (technique.ibjjfPoints > 0) {
       score += technique.ibjjfPoints * 1.5;
     }
-    // Non-scoring transitions (escapes) are valuable from bad positions
-    const target = POSITIONS[technique.transition.position];
-    if (target && !technique.transition.userBecomesTop) {
-      if (aiRole === 'bottom' && pos.control > 0) {
-        score += pos.control * 2;
-      }
+    // Non-scoring transitions (escapes) are valuable when opponent has control
+    if (!technique.transition.userBecomesTop && aiRole === 'bottom') {
+      score += opponentControl * 2;
     }
   }
 
@@ -67,14 +63,23 @@ function scoreCategoryTechnique(positionId, aiRole, category, technique, aiToken
     score -= 1;
   }
 
-  // Control is generally safe and good from top
-  if (category === 'control' && aiRole === 'top') {
-    score += 1;
+  // Control category: more attractive when we have low control or need to strip opponent's
+  if (category === 'control') {
+    if (opponentControl > 0) {
+      score += opponentControl * 2; // strip their control first
+    } else if (aiControl < 2) {
+      score += 2; // build our own control
+    }
   }
 
-  // Defense is important when in bad position
-  if (category === 'defense' && aiRole === 'bottom' && pos.control >= 2) {
+  // Defense is important when opponent has high control
+  if (category === 'defense' && opponentControl >= 2) {
     score += 2;
+  }
+
+  // Sweep is important when opponent has control (escape pressure)
+  if (category === 'sweep' && opponentControl > 0) {
+    score += opponentControl;
   }
 
   return Math.max(score, 0);
@@ -102,7 +107,8 @@ export function aiSelectAction(state) {
       if (!usable) continue; // AI only considers techniques it can actually use
       const score = scoreCategoryTechnique(
         state.position, aiRole, cat, tech,
-        state.tokens.ai, state.tokens.player
+        state.tokens.ai, state.tokens.player,
+        state.control.ai, state.control.player
       );
       options.push({ category: cat, technique: tech, score });
     }
