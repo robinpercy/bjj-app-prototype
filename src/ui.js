@@ -248,7 +248,7 @@ export function renderMatchState(state) {
   // Silhouette
   $('silhouette-container').innerHTML = POSITION_SVGS[state.position] || POSITION_SVGS.standing_neutral;
 
-  // Control pips (5-pip tug-of-war: AI+2, AI+1, neutral, P+1, P+2)
+  // Control pips (5-pip tug-of-war: P+2, P+1, neutral, AI+1, AI+2)
   const pips = $('control-pips');
   pips.innerHTML = '';
   const aiCtrl = state.control.ai;
@@ -256,16 +256,16 @@ export function renderMatchState(state) {
   for (let i = 0; i < 5; i++) {
     const pip = document.createElement('div');
     if (i < 2) {
-      // AI side (left): index 0 = AI+2, index 1 = AI+1
-      const aiLevel = 2 - i; // 2, 1
-      pip.className = 'pip' + (aiCtrl >= aiLevel ? ' filled-ai' : '');
+      // Player side (left): index 0 = P+2, index 1 = P+1
+      const plLevel = 2 - i; // 2, 1
+      pip.className = 'pip' + (plCtrl >= plLevel ? ' filled-player' : '');
     } else if (i === 2) {
       // Center neutral pip
       pip.className = 'pip';
     } else {
-      // Player side (right): index 3 = P+1, index 4 = P+2
-      const plLevel = i - 2; // 1, 2
-      pip.className = 'pip' + (plCtrl >= plLevel ? ' filled-player' : '');
+      // AI side (right): index 3 = AI+1, index 4 = AI+2
+      const aiLevel = i - 2; // 1, 2
+      pip.className = 'pip' + (aiCtrl >= aiLevel ? ' filled-ai' : '');
     }
     pips.appendChild(pip);
   }
@@ -300,11 +300,13 @@ function renderTokens(containerId, tokens) {
     const badge = document.createElement('div');
     if (tokens[i]) {
       const t = TOKEN_TYPES[tokens[i]];
-      badge.className = 'token-badge active';
-      badge.innerHTML = `<span class="token-icon">${t.icon}</span> ${t.name}`;
+      badge.className = 'token-badge-compact active';
+      badge.innerHTML = `<span class="token-icon">${t.icon}</span>`;
+      badge.title = t.name;
     } else {
-      badge.className = 'token-badge empty';
-      badge.innerHTML = '<span class="token-icon">○</span> Empty';
+      badge.className = 'token-badge-compact empty';
+      badge.innerHTML = '<span class="token-icon">○</span>';
+      badge.title = 'Empty';
     }
     container.appendChild(badge);
   }

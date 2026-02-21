@@ -220,52 +220,60 @@ body {
 .adv-dash { color: var(--text-dim); font-weight: 400; }
 .adv-you  { color: var(--accent); }
 
-/* ─── TOKEN STRIP ────────────────────────────────────────────────────────── */
-.token-strip {
+/* ─── ARENA ROW & TOKEN COLUMNS ──────────────────────────────────────────── */
+.arena-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 20px;
-  flex-shrink: 0;
-}
-.player-token-strip {
+  justify-content: center;
+  width: 100%;
   z-index: 1;
+  flex: 1 1 0%;
+  min-height: 0;
 }
-.token-strip-label {
+.token-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 56px;
+  flex-shrink: 0;
+  gap: 6px;
+}
+.token-column-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   color: var(--text-dim);
-  min-width: 30px;
+  font-weight: 600;
 }
-.token-slots {
+.token-slots-vertical {
   display: flex;
+  flex-direction: column;
   gap: 6px;
-  flex-wrap: wrap;
+  align-items: center;
 }
-.token-badge {
+.token-badge-compact {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
+  justify-content: center;
+  font-size: 16px;
   border: 1px solid;
-  white-space: nowrap;
+  cursor: default;
 }
-.token-badge.active {
+.token-badge-compact.active {
   background: rgba(240,192,64,0.12);
   border-color: var(--gold);
   color: var(--gold);
 }
-.token-badge.empty {
+.token-badge-compact.empty {
   background: transparent;
   border-color: var(--border);
   color: var(--text-dim);
   opacity: .4;
 }
-.token-icon { font-size: 13px; }
+.token-badge-compact .token-icon { font-size: 16px; line-height: 1; }
 
 /* ─── POSITION PANEL ─────────────────────────────────────────────────────── */
 .position-panel {
@@ -322,7 +330,6 @@ body {
   position: relative;
   width: min(220px, 40vw);
   aspect-ratio: 1;
-  margin: 6px 0 4px;
   z-index: 1;
   flex-shrink: 1;
 }

@@ -158,15 +158,6 @@
         </div>
       </div>
 
-      <!-- Opponent tokens -->
-      <div class="token-strip">
-        <span class="token-strip-label">OPP</span>
-        <div id="ai-tokens" class="token-slots">
-          <div class="token-badge empty"><span class="token-icon">○</span> Empty</div>
-          <div class="token-badge empty"><span class="token-icon">○</span> Empty</div>
-        </div>
-      </div>
-
       <!-- Center: Position panel -->
       <div class="position-panel">
         <div class="mat-bg"></div>
@@ -177,14 +168,6 @@
           <span id="initiative-text">Neutral</span>
         </div>
 
-        <!-- Silhouette area -->
-        <div class="silhouette-area">
-          <div class="silhouette-ring"></div>
-          <div class="silhouette-ring"></div>
-          <div class="silhouette-ring"></div>
-          <div id="silhouette-container" class="silhouette-figures"></div>
-        </div>
-
         <!-- Control pips -->
         <div class="control-row">
           <span class="control-label">Control</span>
@@ -192,12 +175,23 @@
           <span id="control-value" class="control-value">+0</span>
         </div>
 
-        <!-- Player tokens -->
-        <div class="token-strip player-token-strip">
-          <span class="token-strip-label">YOU</span>
-          <div id="player-tokens" class="token-slots">
-            <div class="token-badge empty"><span class="token-icon">○</span> Empty</div>
-            <div class="token-badge empty"><span class="token-icon">○</span> Empty</div>
+        <!-- Arena: token columns flanking silhouette -->
+        <div class="arena-row">
+          <div class="token-column">
+            <span class="token-column-label">YOU</span>
+            <div id="player-tokens" class="token-slots-vertical"></div>
+          </div>
+
+          <div class="silhouette-area">
+            <div class="silhouette-ring"></div>
+            <div class="silhouette-ring"></div>
+            <div class="silhouette-ring"></div>
+            <div id="silhouette-container" class="silhouette-figures"></div>
+          </div>
+
+          <div class="token-column">
+            <span class="token-column-label">OPP</span>
+            <div id="ai-tokens" class="token-slots-vertical"></div>
           </div>
         </div>
 
