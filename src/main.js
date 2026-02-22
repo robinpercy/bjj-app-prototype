@@ -5,11 +5,13 @@ import './style.css';
 import {
   createGameState, startMatch, startTurn, lockActions,
   resolveAndAdvance, nextTurn, TURN_PHASES,
+  getPreRollInfo, rollD6,
 } from './game-engine.js';
 import { aiSelectAction } from './ai.js';
 import {
   showScreen, renderMatchState, renderActionButtons,
-  openTechniqueDrawer, closeTechniqueDrawer, showResolution,
+  openTechniqueDrawer, closeTechniqueDrawer,
+  showPreRoll, animateDieRoll, showPostRoll,
   renderMatchEnd, disableActions,
 } from './ui.js';
 
@@ -67,19 +69,31 @@ function onTechniqueSelect(technique) {
   // Disable UI
   disableActions();
 
-  // Short delay before resolution for dramatic effect
+  // Short delay before showing pre-roll overlay
   setTimeout(() => {
-    const resolution = resolveAndAdvance(state);
-
-    showResolution(state, resolution, () => {
-      if (state.phase === TURN_PHASES.MATCH_END) {
-        renderMatchEnd(state, () => beginMatch(), () => {
-          showScreen('screen-start');
+    // Phase 1: pre-roll (base scores only, no dice yet)
+    const preRollInfo = getPreRollInfo(state);
+    showPreRoll(state, preRollInfo, () => {
+      // Phase 2: roll both dice and animate simultaneously
+      const playerDie = rollD6();
+      const aiDie = rollD6();
+      animateDieRoll(playerDie, aiDie, () => {
+        // Phase 3: resolve and show result
+        const resolution = resolveAndAdvance(state, {
+          playerDie,
+          aiDie,
         });
-      } else {
-        nextTurn(state);
-        beginTurn();
-      }
+        showPostRoll(state, resolution, () => {
+          if (state.phase === TURN_PHASES.MATCH_END) {
+            renderMatchEnd(state, () => beginMatch(), () => {
+              showScreen('screen-start');
+            });
+          } else {
+            nextTurn(state);
+            beginTurn();
+          }
+        });
+      });
     });
   }, 600);
 }
