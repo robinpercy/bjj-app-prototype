@@ -410,7 +410,6 @@ export function openTechniqueDrawer(state, category, onTechniqueSelect) {
         <div class="tech-desc">${desc}</div>
       </div>
       <div class="tech-meta">
-        <span class="tech-mod">+${tech.modifier}</span>
         <span class="tech-req${reqClass}">${usable ? '' : '🔒 '}${reqText}</span>
       </div>
     `;
@@ -468,8 +467,7 @@ export function showResolution(state, resolution, onContinue) {
   $('res-player-score').textContent = resolution.playerScore.total;
   const pb = resolution.playerScore.breakdown;
   $('res-player-breakdown').innerHTML =
-    `Ctrl: ${pb.posControl} · Match: ${pb.matchupMod > 0 ? '+' : ''}${pb.matchupMod}<br>` +
-    `Tech: +${pb.techniqueMod} · Tok: +${pb.tokenMod}`;
+    `Ctrl: ${pb.posControl} · Match: ${pb.matchupMod > 0 ? '+' : ''}${pb.matchupMod} · Tok: +${pb.tokenMod}`;
 
   // AI side
   const aiCat = CATEGORIES[state.aiCategory];
@@ -478,8 +476,7 @@ export function showResolution(state, resolution, onContinue) {
   $('res-ai-score').textContent = resolution.aiScore.total;
   const ab = resolution.aiScore.breakdown;
   $('res-ai-breakdown').innerHTML =
-    `Ctrl: ${ab.posControl} · Match: ${ab.matchupMod > 0 ? '+' : ''}${ab.matchupMod}<br>` +
-    `Tech: +${ab.techniqueMod} · Tok: +${ab.tokenMod}`;
+    `Ctrl: ${ab.posControl} · Match: ${ab.matchupMod > 0 ? '+' : ''}${ab.matchupMod} · Tok: +${ab.tokenMod}`;
 
   // Outcome
   const outcome = $('res-outcome');

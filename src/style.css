@@ -600,11 +600,6 @@ body {
   align-items: flex-end;
   gap: 4px;
 }
-.tech-mod {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--green);
-}
 .tech-req {
   font-size: 9px;
   padding: 3px 7px;

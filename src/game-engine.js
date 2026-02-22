@@ -98,18 +98,17 @@ export function clearAutoClearTokens(state, positionId) {
 
 /**
  * Calculate resolution score for one player.
- * Score = Position Control + Matchup Modifier + Technique Modifier + Token Modifier
+ * Score = Position Control + Matchup Modifier + Token Modifier
  */
 function calculateScore(positionId, isTopPlayer, category, technique, opponentCategory, tokens, controlPoints) {
   const posControl = controlPoints;
   const matchupMod = getMatchupModifier(category, opponentCategory);
-  const techniqueMod = technique.modifier;
   // Token modifier: +1 for each active token
   const tokenMod = tokens.length;
 
   return {
-    total: posControl + matchupMod + techniqueMod + tokenMod,
-    breakdown: { posControl, matchupMod, techniqueMod, tokenMod },
+    total: posControl + matchupMod + tokenMod,
+    breakdown: { posControl, matchupMod, tokenMod },
   };
 }
 
