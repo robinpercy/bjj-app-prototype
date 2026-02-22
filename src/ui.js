@@ -389,16 +389,21 @@ export function openTechniqueDrawer(state, category, onTechniqueSelect) {
 
   for (const tech of techs) {
     const usable = playerCanUseTechnique(state, tech);
+    const alreadyEarned = tech.tokenReward && state.tokens.player.includes(tech.tokenReward);
     const item = document.createElement('div');
     item.className = 'technique-item' + (usable ? '' : ' locked');
 
-    const reqText = tech.requiredTokens.length > 0
-      ? tech.requiredTokens.map(r => TOKEN_TYPES[r].name).join(', ')
-      : 'No requirement';
-
-    const reqClass = tech.requiredTokens.length > 0
-      ? (usable ? '' : ' locked-req')
-      : ' none';
+    let reqText, reqClass;
+    if (alreadyEarned) {
+      reqText = 'Already earned';
+      reqClass = ' locked-req';
+    } else if (tech.requiredTokens.length > 0) {
+      reqText = tech.requiredTokens.map(r => TOKEN_TYPES[r].name).join(', ');
+      reqClass = usable ? '' : ' locked-req';
+    } else {
+      reqText = 'No requirement';
+      reqClass = ' none';
+    }
 
     const icon = TECHNIQUE_ICONS[tech.id] || '⚡';
     const desc = getTechDescription(tech);

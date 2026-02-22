@@ -8,6 +8,8 @@ export const TOKEN_TYPES = {
   arm_isolated:         { id: 'arm_isolated',         name: 'Arm Isolated',         icon: '💪' },
   leg_isolated:         { id: 'leg_isolated',         name: 'Leg Isolated',         icon: '🦵' },
   balance_compromised:  { id: 'balance_compromised',  name: 'Balance Compromised',  icon: '⚖️' },
+  head_controlled:      { id: 'head_controlled',      name: 'Head Controlled',      icon: '🎯' },
+  pinned:               { id: 'pinned',               name: 'Pinned',               icon: '📌' },
 };
 
 // ─── Action Categories ──────────────────────────────────────────────────────
@@ -400,7 +402,7 @@ export const TECHNIQUES = [
     modifier: 0,
     risk: 'neutral',
     requiredTokens: [],
-    tokenReward: null,
+    tokenReward: 'head_controlled',
     transition: null,
     isSubmission: false,
     ibjjfPoints: 0,
@@ -416,7 +418,7 @@ export const TECHNIQUES = [
     modifier: 0,
     risk: 'neutral',
     requiredTokens: [],
-    tokenReward: null,
+    tokenReward: 'pinned',
     transition: null,
     isSubmission: false,
     ibjjfPoints: 0,
@@ -431,7 +433,7 @@ export const TECHNIQUES = [
     modifier: 0,
     risk: 'neutral',
     requiredTokens: [],
-    tokenReward: null,
+    tokenReward: 'posture_broken',
     transition: null,
     isSubmission: false,
     ibjjfPoints: 0,
@@ -446,7 +448,7 @@ export const TECHNIQUES = [
     modifier: 0,
     risk: 'neutral',
     requiredTokens: [],
-    tokenReward: null,
+    tokenReward: 'head_controlled',
     transition: null,
     isSubmission: false,
     ibjjfPoints: 0,
@@ -462,7 +464,7 @@ export const TECHNIQUES = [
     modifier: 0,
     risk: 'neutral',
     requiredTokens: [],
-    tokenReward: null,
+    tokenReward: 'balance_compromised',
     transition: null,
     isSubmission: false,
     ibjjfPoints: 0,
@@ -556,7 +558,7 @@ export const TECHNIQUES = [
     modifier: 0,
     risk: 'neutral',
     requiredTokens: [],
-    tokenReward: null,
+    tokenReward: 'inside_position',
     transition: null,
     isSubmission: false,
     ibjjfPoints: 0,
@@ -915,6 +917,7 @@ export function getTechniquesForPositionRole(positionId, role, category = null) 
  * Check if a technique's token requirements are met.
  */
 export function canUseTechnique(technique, playerTokens) {
+  if (technique.tokenReward && playerTokens.includes(technique.tokenReward)) return false;
   if (!technique.requiredTokens || technique.requiredTokens.length === 0) return true;
   return technique.requiredTokens.every(req => playerTokens.includes(req));
 }

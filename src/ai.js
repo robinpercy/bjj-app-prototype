@@ -23,8 +23,8 @@ const DIFFICULTY = {
 function scoreCategoryTechnique(positionId, aiRole, category, technique, aiTokens, opponentTokens, aiControl, opponentControl) {
   let score = 0;
 
-  // Technique modifier contributes to attractiveness
-  score += technique.modifier * 2;
+  // Technique modifier contributes to attractiveness (currently all zero)
+  score += technique.modifier;
 
   // Submissions are very attractive when tokens are met
   if (technique.isSubmission) {
@@ -115,10 +115,11 @@ export function aiSelectAction(state) {
   }
 
   if (options.length === 0) {
-    // Fallback: pick any legal technique even without tokens
+    // Fallback: pick any legal technique even without tokens, but skip already-earned rewards
     for (const cat of categories) {
       const techs = getTechniquesForPositionRole(state.position, aiRole, cat);
       for (const tech of techs) {
+        if (tech.tokenReward && state.tokens.ai.includes(tech.tokenReward)) continue;
         options.push({ category: cat, technique: tech, score: 1 });
       }
     }

@@ -228,7 +228,7 @@ export function resolveTurn(state) {
     }
     // On dominant, grant a bonus token if technique didn't grant one
     if (tier === OUTCOME_TIERS.DOMINANT && !winnerTechnique.tokenReward) {
-      const possibleTokens = ['posture_broken', 'inside_position', 'arm_isolated', 'balance_compromised', 'leg_isolated'];
+      const possibleTokens = ['posture_broken', 'inside_position', 'arm_isolated', 'balance_compromised', 'leg_isolated', 'head_controlled', 'pinned'];
       const currentTokens = state.tokens[winner];
       const available = possibleTokens.filter(t => !currentTokens.includes(t));
       if (available.length > 0 && currentTokens.length < MAX_TOKENS) {
