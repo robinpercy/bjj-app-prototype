@@ -66,12 +66,6 @@ export function createGameState() {
   };
 }
 
-// ─── Dice ───────────────────────────────────────────────────────────────────
-
-export function rollD6() {
-  return Math.floor(Math.random() * 6) + 1;
-}
-
 // ─── Token Management ───────────────────────────────────────────────────────
 
 export function addToken(state, who, tokenId) {
@@ -104,19 +98,18 @@ export function clearAutoClearTokens(state, positionId) {
 
 /**
  * Calculate resolution score for one player.
- * Score = Position Control + Matchup Modifier + Technique Modifier + Token Modifier + d6
+ * Score = Position Control + Matchup Modifier + Technique Modifier + Token Modifier
  */
-function calculateScore(positionId, isTopPlayer, category, technique, opponentCategory, tokens, controlPoints, forcedDie = null) {
+function calculateScore(positionId, isTopPlayer, category, technique, opponentCategory, tokens, controlPoints) {
   const posControl = controlPoints;
   const matchupMod = getMatchupModifier(category, opponentCategory);
   const techniqueMod = technique.modifier;
   // Token modifier: +1 for each active token
   const tokenMod = tokens.length;
-  const die = forcedDie !== null ? forcedDie : rollD6();
 
   return {
-    total: posControl + matchupMod + techniqueMod + tokenMod + die,
-    breakdown: { posControl, matchupMod, techniqueMod, tokenMod, die },
+    total: posControl + matchupMod + techniqueMod + tokenMod,
+    breakdown: { posControl, matchupMod, techniqueMod, tokenMod },
   };
 }
 
@@ -150,18 +143,16 @@ function getIbjjfLabel(technique) {
  * Points are awarded for achieving positions (transitions), not from exchange margin.
  * The exchange roll determines who wins; the winner's technique determines what happens.
  */
-export function resolveTurn(state, diceOverride = null) {
+export function resolveTurn(state) {
   const playerScore = calculateScore(
     state.position, state.playerIsTop,
     state.playerCategory, state.playerTechnique,
-    state.aiCategory, state.tokens.player, state.control.player,
-    diceOverride?.playerDie ?? null
+    state.aiCategory, state.tokens.player, state.control.player
   );
   const aiScore = calculateScore(
     state.position, !state.playerIsTop,
     state.aiCategory, state.aiTechnique,
-    state.playerCategory, state.tokens.ai, state.control.ai,
-    diceOverride?.aiDie ?? null
+    state.playerCategory, state.tokens.ai, state.control.ai
   );
 
   const margin = Math.abs(playerScore.total - aiScore.total);
@@ -366,9 +357,9 @@ export function lockActions(state, playerCategory, playerTechnique, aiCategory, 
   state.phase = TURN_PHASES.ACTION_LOCKED;
 }
 
-export function resolveAndAdvance(state, diceOverride = null) {
+export function resolveAndAdvance(state) {
   state.phase = TURN_PHASES.RESOLUTION;
-  const resolution = resolveTurn(state, diceOverride);
+  const resolution = resolveTurn(state);
   state.lastResolution = resolution;
 
   // Check for submission
@@ -423,27 +414,6 @@ export function resolveAndAdvance(state, diceOverride = null) {
 export function nextTurn(state) {
   state.turnNumber++;
   state.phase = TURN_PHASES.TURN_START;
-}
-
-// ─── Pre-Roll Info ──────────────────────────────────────────────────────────
-
-/**
- * Compute pre-dice base scores for both sides (no dice rolled yet).
- * Returns base scores and the advantage derived from their difference.
- */
-export function getPreRollInfo(state) {
-  const playerBase = calculateScore(
-    state.position, state.playerIsTop,
-    state.playerCategory, state.playerTechnique,
-    state.aiCategory, state.tokens.player, state.control.player, 0
-  );
-  const aiBase = calculateScore(
-    state.position, !state.playerIsTop,
-    state.aiCategory, state.aiTechnique,
-    state.playerCategory, state.tokens.ai, state.control.ai, 0
-  );
-  const advantage = playerBase.total - aiBase.total;
-  return { playerBase, aiBase, advantage };
 }
 
 // ─── Query Helpers ──────────────────────────────────────────────────────────

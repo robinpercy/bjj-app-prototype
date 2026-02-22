@@ -434,126 +434,15 @@ export function closeTechniqueDrawer() {
   $('overlay-backdrop').classList.remove('visible');
 }
 
-// ─── Resolution Display (Two-Phase) ─────────────────────────────────────────
+// ─── Resolution Display ──────────────────────────────────────────────────────
 
 /**
- * Phase 1: Show pre-roll matchup with base scores (no dice) and advantage.
+ * Show resolution overlay with scores, outcome, and narratives in one shot.
  */
-export function showPreRoll(state, preRollInfo, onRollDice) {
+export function showResolution(state, resolution, onContinue) {
   const overlay = $('resolution-overlay');
 
-  // Header — "SHOWDOWN"
-  const header = $('res-header');
-  header.textContent = 'SHOWDOWN';
-  header.className = 'res-header major';
-
-  // Player side (base scores, die shown as "🎲")
-  const playerCat = CATEGORIES[state.playerCategory];
-  $('res-player-category').textContent = playerCat.icon + ' ' + playerCat.name;
-  $('res-player-technique').textContent = state.playerTechnique.name;
-  $('res-player-score').textContent = preRollInfo.playerBase.total;
-  const pb = preRollInfo.playerBase.breakdown;
-  $('res-player-breakdown').innerHTML =
-    `Ctrl: ${pb.posControl} · Match: ${pb.matchupMod > 0 ? '+' : ''}${pb.matchupMod}<br>` +
-    `Tech: +${pb.techniqueMod} · Tok: +${pb.tokenMod} · Die: 🎲`;
-
-  // AI side (base scores, die shown as "🎲")
-  const aiCat = CATEGORIES[state.aiCategory];
-  $('res-ai-category').textContent = aiCat.icon + ' ' + aiCat.name;
-  $('res-ai-technique').textContent = state.aiTechnique.name;
-  $('res-ai-score').textContent = preRollInfo.aiBase.total;
-  const ab = preRollInfo.aiBase.breakdown;
-  $('res-ai-breakdown').innerHTML =
-    `Ctrl: ${ab.posControl} · Match: ${ab.matchupMod > 0 ? '+' : ''}${ab.matchupMod}<br>` +
-    `Tech: +${ab.techniqueMod} · Tok: +${ab.tokenMod} · Die: 🎲`;
-
-  // Advantage indicator
-  const advEl = $('res-advantage');
-  const adv = preRollInfo.advantage;
-  if (adv > 0) {
-    advEl.textContent = `+${adv} Advantage`;
-    advEl.className = 'res-advantage adv-positive';
-  } else if (adv < 0) {
-    advEl.textContent = `\u2212${Math.abs(adv)} Disadvantage`;
-    advEl.className = 'res-advantage adv-negative';
-  } else {
-    advEl.textContent = 'Even Matchup';
-    advEl.className = 'res-advantage adv-even';
-  }
-
-  // Both dice show "?"
-  const diePlayer = $('res-die-player');
-  const dieAi = $('res-die-ai');
-  diePlayer.textContent = '?';
-  diePlayer.className = 'res-die';
-  dieAi.textContent = '?';
-  dieAi.className = 'res-die';
-
-  // Hide outcome and narratives during pre-roll
-  $('res-outcome').classList.add('pre-roll-hidden');
-  $('res-narratives').classList.add('pre-roll-hidden');
-
-  overlay.classList.add('visible');
-
-  // Button: "Roll Dice 🎲"
-  const btn = $('res-continue');
-  const newBtn = btn.cloneNode(true);
-  btn.parentNode.replaceChild(newBtn, btn);
-  newBtn.id = 'res-continue';
-  newBtn.textContent = 'Roll Dice 🎲';
-  newBtn.addEventListener('click', () => {
-    newBtn.disabled = true;
-    newBtn.style.opacity = '0.5';
-    onRollDice();
-  });
-}
-
-/**
- * Animate both dice cycling through random values, then land on final values.
- */
-export function animateDieRoll(playerDie, aiDie, onComplete) {
-  const diePlayer = $('res-die-player');
-  const dieAi = $('res-die-ai');
-  diePlayer.className = 'res-die rolling';
-  dieAi.className = 'res-die rolling';
-
-  const startTime = Date.now();
-  const totalDuration = 3000;
-  const slowdownAt = 2500;
-  let interval = 80;
-  let timer = null;
-
-  function tick() {
-    const elapsed = Date.now() - startTime;
-    if (elapsed >= totalDuration) {
-      clearTimeout(timer);
-      diePlayer.textContent = playerDie;
-      dieAi.textContent = aiDie;
-      diePlayer.classList.remove('rolling');
-      dieAi.classList.remove('rolling');
-      setTimeout(() => onComplete(), 400);
-      return;
-    }
-
-    // Show random faces on both dice
-    diePlayer.textContent = Math.floor(Math.random() * 6) + 1;
-    dieAi.textContent = Math.floor(Math.random() * 6) + 1;
-
-    // Slow down in the last stretch
-    if (elapsed >= slowdownAt) {
-      interval = 200;
-    }
-    timer = setTimeout(tick, interval);
-  }
-
-  tick();
-}
-
-/**
- * Phase 2: Update overlay with full scores, outcome, and narratives.
- */
-export function showPostRoll(state, resolution, onContinue) {
-  // Update header to outcome
+  // Header
   const header = $('res-header');
   if (resolution.submission) {
     header.textContent = 'SUBMISSION!';
@@ -572,40 +461,28 @@ export function showPostRoll(state, resolution, onContinue) {
     header.className = 'res-header minor';
   }
 
-  // Update player score with full total (including die)
+  // Player side
+  const playerCat = CATEGORIES[state.playerCategory];
+  $('res-player-category').textContent = playerCat.icon + ' ' + playerCat.name;
+  $('res-player-technique').textContent = state.playerTechnique.name;
   $('res-player-score').textContent = resolution.playerScore.total;
   const pb = resolution.playerScore.breakdown;
   $('res-player-breakdown').innerHTML =
     `Ctrl: ${pb.posControl} · Match: ${pb.matchupMod > 0 ? '+' : ''}${pb.matchupMod}<br>` +
-    `Tech: +${pb.techniqueMod} · Tok: +${pb.tokenMod} · Die: ${pb.die}`;
+    `Tech: +${pb.techniqueMod} · Tok: +${pb.tokenMod}`;
 
-  // Update AI score with full total (including die)
+  // AI side
+  const aiCat = CATEGORIES[state.aiCategory];
+  $('res-ai-category').textContent = aiCat.icon + ' ' + aiCat.name;
+  $('res-ai-technique').textContent = state.aiTechnique.name;
   $('res-ai-score').textContent = resolution.aiScore.total;
   const ab = resolution.aiScore.breakdown;
   $('res-ai-breakdown').innerHTML =
     `Ctrl: ${ab.posControl} · Match: ${ab.matchupMod > 0 ? '+' : ''}${ab.matchupMod}<br>` +
-    `Tech: +${ab.techniqueMod} · Tok: +${ab.tokenMod} · Die: ${ab.die}`;
+    `Tech: +${ab.techniqueMod} · Tok: +${ab.tokenMod}`;
 
-  // Apply win/lose/draw classes to both dice
-  const diePlayer = $('res-die-player');
-  const dieAi = $('res-die-ai');
-  if (!resolution.winner) {
-    diePlayer.classList.add('result-draw');
-    dieAi.classList.add('result-draw');
-  } else if (resolution.winner === 'player') {
-    diePlayer.classList.add('result-win');
-    dieAi.classList.add('result-lose');
-  } else {
-    diePlayer.classList.add('result-lose');
-    dieAi.classList.add('result-win');
-  }
-
-  // Hide advantage text post-roll
-  $('res-advantage').textContent = '';
-
-  // Show outcome
+  // Outcome
   const outcome = $('res-outcome');
-  outcome.classList.remove('pre-roll-hidden');
   if (!resolution.winner) {
     outcome.textContent = 'Even exchange — stalemate!';
     outcome.className = 'res-outcome draw';
@@ -633,9 +510,8 @@ export function showPostRoll(state, resolution, onContinue) {
     outcome.className = 'res-outcome lose';
   }
 
-  // Show narratives
+  // Narratives
   const narratives = $('res-narratives');
-  narratives.classList.remove('pre-roll-hidden');
   narratives.innerHTML = '';
   for (const n of resolution.narratives) {
     const item = document.createElement('div');
@@ -653,9 +529,11 @@ export function showPostRoll(state, resolution, onContinue) {
   newBtn.disabled = false;
   newBtn.style.opacity = '';
   newBtn.addEventListener('click', () => {
-    $('resolution-overlay').classList.remove('visible');
+    overlay.classList.remove('visible');
     onContinue();
   });
+
+  overlay.classList.add('visible');
 }
 
 // ─── Match End ──────────────────────────────────────────────────────────────
