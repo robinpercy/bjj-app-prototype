@@ -398,7 +398,13 @@ export function openTechniqueDrawer(state, category, onTechniqueSelect) {
       reqText = 'Already earned';
       reqClass = ' locked-req';
     } else if (tech.requiredTokens.length > 0) {
-      reqText = tech.requiredTokens.map(r => TOKEN_TYPES[r].name).join(', ');
+      const needed = Math.min(2, tech.requiredTokens.length);
+      const heldCount = tech.requiredTokens.filter(r => state.tokens.player.includes(r)).length;
+      const tokenLabels = tech.requiredTokens.map(r => {
+        const held = state.tokens.player.includes(r);
+        return held ? `<strong>\u2713 ${TOKEN_TYPES[r].name}</strong>` : TOKEN_TYPES[r].name;
+      }).join(' · ');
+      reqText = usable ? tokenLabels : `${heldCount}/${needed}: ${tokenLabels}`;
       reqClass = usable ? '' : ' locked-req';
     } else {
       reqText = 'No requirement';
